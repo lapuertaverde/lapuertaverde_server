@@ -12,16 +12,20 @@ exports.GetAll = async () => {
 
 exports.Create = async (date, consumerGroup, consumers, deliveryAddress, status) => {
   try {
-    const data = await new conn.db.connMongo.CastSheets({
-      date,
-      consumerGroup,
-      consumers,
-      deliveryAddress,
-      status
-    })
-
-    data.save()
-    return data
+    const duplicatedCastSheets = await conn.db.connMongo.CastSheets.find({ date, consumerGroup })
+    if (duplicatedCastSheets.length > 0) {
+      return "You can't create a castsheet with the same data and group"
+    } else {
+      const data = await new conn.db.connMongo.CastSheets({
+        date,
+        consumerGroup,
+        consumers,
+        deliveryAddress,
+        status
+      })
+      data.save()
+      return data
+    }
   } catch (error) {
     magic.LogDanger('Cannot Create castsheet', error)
     return await { err: { code: 123, message: error } }
