@@ -3,12 +3,11 @@ module.exports = (db) => {
     {
       name: { type: String, required: true, trim: true },
       consumers: [{ type: db.Schema.Types.ObjectId, ref: 'Consumer' }],
-      monthOrders: { type: String, required: true, trim: true },
-      anualOrders: { type: String, required: true, trim: true },
+      castSheets: [{ type: db.Schema.Types.ObjectId, ref: 'CastSheets' }]
     },
     {
-      timestamps: true,
-    },
-  );
-  return db.model('ConsumerGroup', consumerGroupSchema);
-};
+      timestamps: true
+    }
+  )
+  return db.model('ConsumerGroup', consumerGroupSchema)
+}
