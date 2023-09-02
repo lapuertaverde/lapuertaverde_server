@@ -24,7 +24,7 @@
     "config-yml": "^0.10.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "eslint": "^8.28.0",
+    "eslint": "^8.48.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
