@@ -5,7 +5,7 @@ module.exports = (db) => {
       consumerGroup: { type: String, required: true, trim: true },
       consumers: [{ type: db.Schema.Types.ObjectId, ref: 'Consumer' }],
       deliveryAddress: { type: String, required: true, trim: true },
-      status: { type: Boolean, required: true, trim: true }
+      castStatus: { type: Boolean, required: true, trim: true }
     },
     {
       timestamps: true

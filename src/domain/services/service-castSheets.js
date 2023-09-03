@@ -38,35 +38,35 @@ exports.Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { date, consumerGroup, consumers, deliveryAddress, status } = req.body
+    const { date, consumerGroup, consumers, deliveryAddress, castStatus } = req.body
     if (date && consumerGroup) {
       let respOrm = await ormCastSheets.Create(
         date,
         consumerGroup,
         consumers,
         deliveryAddress,
-        status
+        castStatus
       )
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        message = respOrm.err.message
+        data = { date, consumerGroup, consumers, deliveryAddress, castStatus }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'Card created'
+        message = 'CastSheet created'
         data = respOrm
         statuscode = enum_.CODE_CREATED
       }
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'All fields are required'
+      message = `Date and consumerGroup are required: date=${date},consumerGroup=${consumerGroup}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await magic.ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (err) {
-    console.log('err = ', err)
     return res
       .status(enum_.CODE_INTERNAL_SERVER_ERROR)
       .send(await magic.ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
@@ -87,7 +87,7 @@ exports.Delete = async (req, res) => {
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        message = respOrm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
         message = 'CastSheet deleted'
@@ -119,29 +119,29 @@ exports.Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { date, consumers, consumerGroup, status: castSheetStatus, deliveryAddress } = req.body
+    const { date, consumers, consumerGroup, castStatus, deliveryAddress } = req.body
 
-    const updatedCarstSheets = {
+    const updatedCastSheets = {
       date,
       consumers,
       consumerGroup,
-      castSheetStatus,
+      castStatus,
       deliveryAddress,
       _id: id
     }
 
-    if (id && updatedCard) {
-      let respOrm = await ormCard.Update(id, updatedCarstSheets)
+    if (id && updatedCastSheets) {
+      let respOrm = await ormCastSheets.Update(id, updatedCastSheets)
 
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        message = respOrm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
         message = 'Castsheet updated'
         statuscode = enum_.CODE_OK
-        data = updatedCard
+        data = updatedCastSheets
       }
     } else {
       status = 'Failure'
