@@ -12,16 +12,28 @@ exports.GetAll = async () => {
 
 exports.Create = async (name, consumers, castSheets) => {
   try {
-    const data = await new conn.db.connMongo.ConsumerGroup({
-      name,
-      consumers,
-      castSheets
-    })
-
-    data.save()
-    return data
+    const duplicatedGroup = await conn.db.connMongo.ConsumerGroup.find({ name })
+    if (duplicatedGroup.length > 0) {
+      throw {
+        type: 'custom',
+        code: 'duplicatedNotAllowed',
+        message: "You can't create a consumers group with the same name"
+      }
+    } else {
+      const data = await new conn.db.connMongo.ConsumerGroup({
+        name,
+        consumers,
+        castSheets
+      })
+      data.save()
+      return data
+    }
   } catch (error) {
-    magic.LogDanger('Cannot Create consumerGroup', error)
+    magic.LogDanger('Cannot Create castsheet', error)
+    if (error.type === 'custom') {
+      const { code, message } = error
+      return { err: { code, message } }
+    }
     return { err: { code: 123, message: error } }
   }
 }

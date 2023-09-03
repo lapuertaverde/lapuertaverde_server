@@ -44,9 +44,11 @@ exports.Create = async (req, res) => {
     if (name) {
       let respOrm = await ormConsumerGroup.Create(name, consumers, castSheets)
       if (respOrm.err) {
+        console.log('respOrm.err', respOrm.err)
         status = 'Failure'
         errorcode = respOrm.err.code
         message = respOrm.err.messsage
+        data = { name, consumers, castSheets }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
         message = 'Consumer Group created'
@@ -126,7 +128,7 @@ exports.Update = async (req, res) => {
 
     if (id && updatedConsumerGroup) {
       let respOrm = await ormConsumerGroup.Update(id, updatedConsumerGroup)
-     
+
       if (respOrm?.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
@@ -162,9 +164,9 @@ exports.GetById = async (req, res) => {
   let response = {}
   try {
     const { id } = req.params
-   
+
     let respOrm = await ormConsumerGroup.GetById(id)
-   
+
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
