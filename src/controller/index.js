@@ -3,6 +3,7 @@ const router = express.Router()
 const consumer = require('../domain/services/service-consumer')
 const consumerGroup = require('../domain/services/service-consumerGroup')
 const castSheets = require('../domain/services/service-castSheets')
+const bill = require('../domain/services/service-bill')
 
 router.get('/consumer', consumer.GetAll)
 router.post('/consumer', consumer.Create)
@@ -22,5 +23,11 @@ router.post('/castSheets', castSheets.Create)
 router.delete('/castSheets/:id', castSheets.Delete)
 router.patch('/castSheets/:id', castSheets.Update)
 router.get('/castSheets/:id', castSheets.GetById)
+
+router.get('/bill', bill.GetAll)
+router.post('/bill', bill.Create)
+router.delete('/bill/:id', bill.Delete)
+router.patch('/bill/:id', bill.Update)
+router.get('/bill/:id/:date', bill.GetById)
 
 module.exports = router
