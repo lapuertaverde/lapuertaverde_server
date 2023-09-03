@@ -4,6 +4,7 @@ const magic = require('../../utils/magic')
 const consumer = require('../entities/entity-consumer')
 const consumerGroup = require('../entities/entity-consumerGroup')
 const castSheets = require('../entities/entity-castSheets')
+const bill = require('../entities/entity-bill')
 
 const dotenv = require('dotenv')
 
@@ -22,6 +23,7 @@ if (config.db.mongodb && config.db.mongodb.length > 0) {
     db[c.nameconn].Consumer = consumer(mongoose)
     db[c.nameconn].ConsumerGroup = consumerGroup(mongoose)
     db[c.nameconn].CastSheets = castSheets(mongoose)
+    db[c.nameconn].Bill = bill(mongoose)
   })
   exports.db = db
 
