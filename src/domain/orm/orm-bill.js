@@ -3,8 +3,9 @@ const magic = require('../../utils/magic')
 
 exports.GetAll = async () => {
   try {
-    return await conn.db.connMongo.Bill.find() // .populate('registers')
+    return await conn.db.connMongo.Bill.find()
   } catch (error) {
+    console.log(error)
     magic.LogDanger('Cannot getAll bills', error)
     return { err: { code: 123, message: error } }
   }

@@ -28,6 +28,7 @@ router.get('/bill', bill.GetAll)
 router.post('/bill', bill.Create)
 router.delete('/bill/:id', bill.Delete)
 router.patch('/bill/:id', bill.Update)
-router.get('/bill/:id/:date', bill.GetById)
+router.get('/bill/:id', bill.GetById)
+router.get('/bill/date/:date/:id', bill.GetByIdAndDate)
 
 module.exports = router

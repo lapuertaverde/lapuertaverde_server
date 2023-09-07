@@ -10,7 +10,7 @@ exports.GetAll = async (req, res) => {
   let statuscode = 0
   let response = {}
   try {
-    let respOrm = await Bill.GetAll()
+    let respOrm = await ormBill.GetAll()
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
@@ -40,7 +40,7 @@ exports.Create = async (req, res) => {
   try {
     const { date, consumerName, total, billStatus } = req.body
     if (date && consumerName && total) {
-      let respOrm = await ormCastSheets.Create(date, consumerName, total, billStatus)
+      let respOrm = await ormBill.Create(date, consumerName, total, billStatus)
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
@@ -124,7 +124,7 @@ exports.Update = async (req, res) => {
     }
 
     if (id && updatedBill) {
-      let respOrm = await ormCastSheets.Update(id, updatedBill)
+      let respOrm = await ormBill.Update(id, updatedBill)
 
       if (respOrm.err) {
         status = 'Failure'
@@ -134,7 +134,7 @@ exports.Update = async (req, res) => {
       } else {
         message = 'Bill updated'
         statuscode = enum_.CODE_OK
-        data = updatedCastSheets
+        data = updatedBill
       }
     } else {
       status = 'Failure'
@@ -189,8 +189,7 @@ exports.GetByIdAndDate = async (req, res) => {
   let statuscode = 0
   let response = {}
   try {
-    const { id } = req.params
-    const { date } = req.body
+    const { id, date } = req.params
     let respOrm = await ormBill.GetByIdAndDate(id, date)
     if (respOrm.err) {
       status = 'Failure'
@@ -200,7 +199,7 @@ exports.GetByIdAndDate = async (req, res) => {
     } else {
       message = 'Success getting bill'
       data = respOrm
-      statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
+      statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await magic.ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
