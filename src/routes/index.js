@@ -1,7 +1,7 @@
-const apiServices = require('../controller/index');
+import apiServices from '../controller/index.js'
 
 const routes = (app) => {
-  app.use('/api/v1', apiServices);
-};
+  app.use('/api/v1', apiServices)
+}
 
-module.exports = routes;
+export default routes

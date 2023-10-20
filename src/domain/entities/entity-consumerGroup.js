@@ -1,4 +1,4 @@
-module.exports = (db) => {
+const consumerGroupSchema = (db) => {
   const consumerGroupSchema = new db.Schema(
     {
       name: { type: String, required: true, trim: true },
@@ -11,3 +11,5 @@ module.exports = (db) => {
   )
   return db.model('ConsumerGroup', consumerGroupSchema)
 }
+
+export default consumerGroupSchema

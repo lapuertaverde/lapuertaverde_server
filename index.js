@@ -1,11 +1,11 @@
-const config = require('config-yml');
-const app = require('./src/server');
-const magic = require('./src/utils/magic');
+import config from 'config-yml'
+import app from './src/server/index.js'
+import { LogDanger, LogInfo } from './src/utils/magic.js'
 
 app.listen(config.port, () => {
-  magic.LogInfo(`Server running on http://localhost:${config.port}`);
-});
+  LogInfo(`Server running on http://localhost:${config.port}`)
+})
 
 app.on('error', (err) => {
-  magic.LogDanger(err);
-});
+  LogDanger(err)
+})
