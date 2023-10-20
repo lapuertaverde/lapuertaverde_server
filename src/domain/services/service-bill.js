@@ -1,8 +1,8 @@
-const magic = require('../../utils/magic')
-const enum_ = require('../../utils/enum')
-const ormBill = require('../orm/orm-bill')
+import enum_ from '../../utils/enum.js'
+import { ResponseService, LogDanger } from '../../utils/magic.js'
+import * as ormBill from '../orm/orm-bill.js'
 
-exports.GetAll = async (req, res) => {
+export const GetAll = async (req, res) => {
   let status = 'Success'
   let errorcode = ''
   let message = ''
@@ -21,16 +21,16 @@ exports.GetAll = async (req, res) => {
       data = respOrm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (error) {
-    magic.LogDanger('error: ', error)
-    response = await magic.ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
     return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
   }
 }
 
-exports.Create = async (req, res) => {
+export const Create = async (req, res) => {
   let status = 'Success',
     errorcode = '',
     message = '',
@@ -58,16 +58,16 @@ exports.Create = async (req, res) => {
       message = `Date, consumerName and total are required: date=${date},consumerName=${consumerName}, total: ${total}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (err) {
     return res
       .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await magic.ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
   }
 }
 
-exports.Delete = async (req, res) => {
+export const Delete = async (req, res) => {
   let status = 'Success',
     errorcode = '',
     message = '',
@@ -94,17 +94,17 @@ exports.Delete = async (req, res) => {
       message = 'id does not exist'
       statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (err) {
     console.log('err = ', err)
     return res
       .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await magic.ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
   }
 }
 
-exports.Update = async (req, res) => {
+export const Update = async (req, res) => {
   let status = 'Success',
     errorcode = '',
     message = '',
@@ -142,17 +142,17 @@ exports.Update = async (req, res) => {
       message = 'id does not exist'
       statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (err) {
     console.log('err = ', err)
     return res
       .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await magic.ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
   }
 }
 
-exports.GetById = async (req, res) => {
+export const GetById = async (req, res) => {
   let status = 'Success'
   let errorcode = ''
   let message = ''
@@ -172,16 +172,16 @@ exports.GetById = async (req, res) => {
       data = respOrm
       statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (error) {
-    magic.LogDanger('error: ', error)
-    response = await magic.ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
     return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
   }
 }
 
-exports.GetByIdAndDate = async (req, res) => {
+export const GetByIdAndDate = async (req, res) => {
   let status = 'Success'
   let errorcode = ''
   let message = ''
@@ -201,11 +201,11 @@ exports.GetByIdAndDate = async (req, res) => {
       data = respOrm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
-    response = await magic.ResponseService(status, errorcode, message, data)
+    response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (error) {
-    magic.LogDanger('error: ', error)
-    response = await magic.ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
     return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
   }
 }

@@ -1,9 +1,9 @@
-const conn = require('../repositories/mongo.repository')
-const magic = require('../../utils/magic')
+import conn from '../repositories/mongo.repository.js'
+import magic from '../../utils/magic.js'
 
-exports.GetAll = async () => {
+export const GetAll = async () => {
   try {
-    return await conn.db.connMongo.Bill.find()
+    return await conn.connMongo.Bill.find()
   } catch (error) {
     console.log(error)
     magic.LogDanger('Cannot getAll bills', error)
@@ -11,9 +11,9 @@ exports.GetAll = async () => {
   }
 }
 
-exports.Create = async (date, consumerName, total, billStatus) => {
+export const Create = async (date, consumerName, total, billStatus) => {
   try {
-    const duplicatedBill = await conn.db.connMongo.Bill.find({ date, consumerName })
+    const duplicatedBill = await conn.connMongo.Bill.find({ date, consumerName })
     if (duplicatedBill.length > 0) {
       throw {
         type: 'custom',
@@ -21,7 +21,7 @@ exports.Create = async (date, consumerName, total, billStatus) => {
         message: "You can't create a bill with the same date and consumer"
       }
     } else {
-      const data = await new conn.db.connMongo.Bill({
+      const data = await new conn.connMongo.Bill({
         date,
         consumerName,
         total,
@@ -40,9 +40,9 @@ exports.Create = async (date, consumerName, total, billStatus) => {
   }
 }
 
-exports.Delete = async (id) => {
+export const Delete = async (id) => {
   try {
-    const billDeleted = await conn.db.connMongo.Bill.findByIdAndDelete(id)
+    const billDeleted = await conn.connMongo.Bill.findByIdAndDelete(id)
     if (billDeleted) return billDeleted
   } catch (error) {
     magic.LogDanger('Cannot Delete CastSheets', error)
@@ -51,27 +51,27 @@ exports.Delete = async (id) => {
   }
 }
 
-exports.Update = async (id, updatedBill) => {
+export const Update = async (id, updatedBill) => {
   try {
-    return await conn.db.connMongo.Bill.findByIdAndUpdate(id, updatedBill)
+    return await conn.connMongo.Bill.findByIdAndUpdate(id, updatedBill)
   } catch (error) {
     magic.LogDanger('Cannot Update bill', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.GetById = async (id) => {
+export const GetById = async (id) => {
   try {
-    return await conn.db.connMongo.Bill.findById(id) //.populate('registers')
+    return await conn.connMongo.Bill.findById(id) //.populate('registers')
   } catch (error) {
     magic.LogDanger('Cannot get the CastSheets by its ID', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.GetByIdAndDate = async (id, date) => {
+export const GetByIdAndDate = async (id, date) => {
   try {
-    return await conn.db.connMongo.Bill.find({ id, date }) //.populate('registers')
+    return await conn.connMongo.Bill.find({ id, date }) //.populate('registers')
   } catch (error) {
     magic.LogDanger('Cannot get the CastSheets by its date', error)
     return { err: { code: 123, message: error } }

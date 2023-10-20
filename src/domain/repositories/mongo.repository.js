@@ -1,12 +1,12 @@
-const config = require('config-yml')
-const mongoose = require('mongoose')
-const magic = require('../../utils/magic')
-const consumer = require('../entities/entity-consumer')
-const consumerGroup = require('../entities/entity-consumerGroup')
-const castSheets = require('../entities/entity-castSheets')
-const bill = require('../entities/entity-bill')
+import config from 'config-yml'
+import mongoose from 'mongoose'
+import { LogInfo, LogDanger } from '../../utils/magic.js'
+import consumer from '../entities/entity-consumer.js'
+import consumerGroup from '../entities/entity-consumerGroup.js'
+import castSheets from '../entities/entity-castSheets.js'
+import bill from '../entities/entity-bill.js'
 
-const dotenv = require('dotenv')
+import dotenv from 'dotenv'
 
 dotenv.config()
 
@@ -25,9 +25,10 @@ if (config.db.mongodb && config.db.mongodb.length > 0) {
     db[c.nameconn].CastSheets = castSheets(mongoose)
     db[c.nameconn].Bill = bill(mongoose)
   })
-  exports.db = db
 
-  magic.LogInfo('Conectado a la base de datos')
+  LogInfo('Conectado a la base de datos')
 } else {
-  magic.LogDanger('No existe la base de datos')
+  LogDanger('No existe la base de datos')
 }
+
+export default db

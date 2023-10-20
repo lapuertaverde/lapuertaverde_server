@@ -1,9 +1,9 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
-const consumer = require('../domain/services/service-consumer')
-const consumerGroup = require('../domain/services/service-consumerGroup')
-const castSheets = require('../domain/services/service-castSheets')
-const bill = require('../domain/services/service-bill')
+import * as consumer from '../domain/services/service-consumer.js'
+import * as consumerGroup from '../domain/services/service-consumerGroup.js'
+import * as castSheets from '../domain/services/service-castSheets.js'
+import * as bill from '../domain/services/service-bill.js'
 
 router.get('/consumer', consumer.GetAll)
 router.post('/consumer', consumer.Create)
@@ -31,4 +31,4 @@ router.patch('/bill/:id', bill.Update)
 router.get('/bill/:id', bill.GetById)
 router.get('/bill/date/:date/:id', bill.GetByIdAndDate)
 
-module.exports = router
+export default router

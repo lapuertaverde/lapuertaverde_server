@@ -1,18 +1,18 @@
-const conn = require('../repositories/mongo.repository')
-const magic = require('../../utils/magic')
+import conn from '../repositories/mongo.repository.js'
+import magic from '../../utils/magic.js'
 
-exports.GetAll = async () => {
+export const GetAll = async () => {
   try {
-    return await conn.db.connMongo.CastSheets.find().populate('consumers')
+    return await conn.connMongo.CastSheets.find().populate('consumers')
   } catch (error) {
     magic.LogDanger('Cannot getAll castsheets', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.Create = async (date, consumerGroup, consumers, deliveryAddress, castStatus) => {
+export const Create = async (date, consumerGroup, consumers, deliveryAddress, castStatus) => {
   try {
-    const duplicatedCastSheets = await conn.db.connMongo.CastSheets.find({ date, consumerGroup })
+    const duplicatedCastSheets = await conn.connMongo.CastSheets.find({ date, consumerGroup })
     if (duplicatedCastSheets.length > 0) {
       throw {
         type: 'custom',
@@ -20,7 +20,7 @@ exports.Create = async (date, consumerGroup, consumers, deliveryAddress, castSta
         message: "You can't create a castsheet with the same date and group"
       }
     } else {
-      const data = await new conn.db.connMongo.CastSheets({
+      const data = await new conn.connMongo.CastSheets({
         date,
         consumerGroup,
         consumers,
@@ -40,9 +40,9 @@ exports.Create = async (date, consumerGroup, consumers, deliveryAddress, castSta
   }
 }
 
-exports.Delete = async (id) => {
+export const Delete = async (id) => {
   try {
-    const castsheetDeleted = await conn.db.connMongo.CastSheets.findByIdAndDelete(id)
+    const castsheetDeleted = await conn.connMongo.CastSheets.findByIdAndDelete(id)
     if (castsheetDeleted) return castsheetDeleted
   } catch (error) {
     magic.LogDanger('Cannot Delete CastSheets', error)
@@ -51,18 +51,18 @@ exports.Delete = async (id) => {
   }
 }
 
-exports.Update = async (id, updatedCastSheets) => {
+export const Update = async (id, updatedCastSheets) => {
   try {
-    return await conn.db.connMongo.CastSheets.findByIdAndUpdate(id, updatedCastSheets)
+    return await conn.connMongo.CastSheets.findByIdAndUpdate(id, updatedCastSheets)
   } catch (error) {
     magic.LogDanger('Cannot Update CastSheets', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.GetById = async (id) => {
+export const GetById = async (id) => {
   try {
-    return await conn.db.connMongo.CastSheets.findById(id).populate('consumers')
+    return await conn.connMongo.CastSheets.findById(id).populate('consumers')
   } catch (error) {
     magic.LogDanger('Cannot get the CastSheets by its ID', error)
     return { err: { code: 123, message: error } }

@@ -1,4 +1,4 @@
-module.exports = (db) => {
+const castSheets = (db) => {
   const castSheets = new db.Schema(
     {
       date: { type: String, required: true, trim: true },
@@ -13,3 +13,5 @@ module.exports = (db) => {
   )
   return db.model('CastSheets', castSheets)
 }
+
+export default castSheets

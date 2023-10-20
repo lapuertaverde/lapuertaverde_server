@@ -1,4 +1,4 @@
-module.exports = (db) => {
+const billSchema = (db) => {
   const billSchema = new db.Schema(
     {
       date: { type: String, required: true, trim: true },
@@ -13,3 +13,5 @@ module.exports = (db) => {
   )
   return db.model('Bill', billSchema)
 }
+
+export default billSchema
