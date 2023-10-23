@@ -1,18 +1,22 @@
-const conn = require('../repositories/mongo.repository')
-const magic = require('../../utils/magic')
+import conn from '../repositories/mongo.repository.js'
+import { LogDanger } from '../../utils/magic.js'
 
-exports.GetAll = async () => {
+export const GetAll = async () => {
   try {
-    return await conn.db.connMongo.ConsumerGroup.find().populate('castSheets').populate('consumers')
+    const result = await conn.connMongo.ConsumerGroup.find()
+      .populate('castSheets')
+      .populate('consumers')
+
+    return result
   } catch (error) {
-    magic.LogDanger('Cannot getAll consumer group', error)
+    LogDanger('Cannot getAll consumer group', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.Create = async (name, consumers, castSheets) => {
+export const Create = async (name, consumers, castSheets) => {
   try {
-    const duplicatedGroup = await conn.db.connMongo.ConsumerGroup.find({ name })
+    const duplicatedGroup = await conn.connMongo.ConsumerGroup.find({ name })
     if (duplicatedGroup.length > 0) {
       throw {
         type: 'custom',
@@ -20,7 +24,7 @@ exports.Create = async (name, consumers, castSheets) => {
         message: "You can't create a consumers group with the same name"
       }
     } else {
-      const data = await new conn.db.connMongo.ConsumerGroup({
+      const data = await new conn.connMongo.ConsumerGroup({
         name,
         consumers,
         castSheets
@@ -29,7 +33,7 @@ exports.Create = async (name, consumers, castSheets) => {
       return data
     }
   } catch (error) {
-    magic.LogDanger('Cannot Create castsheet', error)
+    LogDanger('Cannot Create castsheet', error)
     if (error.type === 'custom') {
       const { code, message } = error
       return { err: { code, message } }
@@ -38,29 +42,29 @@ exports.Create = async (name, consumers, castSheets) => {
   }
 }
 
-exports.Delete = async (id) => {
+export const Delete = async (id) => {
   try {
-    return await conn.db.connMongo.ConsumerGroup.findByIdAndDelete(id)
+    return await conn.connMongo.ConsumerGroup.findByIdAndDelete(id)
   } catch (error) {
-    magic.LogDanger('Cannot Delete deck', error)
+    LogDanger('Cannot Delete deck', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.Update = async (id, consumerGroup) => {
+export const Update = async (id, consumerGroup) => {
   try {
-    return await conn.db.connMongo.ConsumerGroup.findByIdAndUpdate(id, consumerGroup)
+    return await conn.connMongo.ConsumerGroup.findByIdAndUpdate(id, consumerGroup)
   } catch (error) {
-    magic.LogDanger('Cannot Update consumer group', error)
+    LogDanger('Cannot Update consumer group', error)
     return { err: { code: 123, message: error } }
   }
 }
 
-exports.GetById = async (id) => {
+export const GetById = async (id) => {
   try {
-    return await conn.db.connMongo.ConsumerGroup.findById(id).populate('consumers')
+    return await conn.connMongo.ConsumerGroup.findById(id).populate('consumers')
   } catch (error) {
-    magic.LogDanger('Cannot get the consumer group by its ID', error)
+    LogDanger('Cannot get the consumer group by its ID', error)
     return { err: { code: 123, message: error } }
   }
 }

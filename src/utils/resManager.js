@@ -1,4 +1,4 @@
-const enum_ = require('../../utils/enum')
+import enum_ from '../../utils/enum'
 
 export const resManager = (respOrm) => {
   if (respOrm.err) {

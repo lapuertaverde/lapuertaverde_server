@@ -1,6 +1,6 @@
-import { LogDanger, ResponseService } from '../../utils/magic.js'
 import enum_ from '../../utils/enum.js'
-import * as ormCastSheets from '../orm/orm-castSheets.js'
+import { ResponseService, LogDanger } from '../../utils/magic.js'
+import * as ormFinalRecord from '../orm/orm-finalRecord.js'
 
 export const GetAll = async (req, res) => {
   let status = 'Success'
@@ -10,14 +10,14 @@ export const GetAll = async (req, res) => {
   let statuscode = 0
   let response = {}
   try {
-    let respOrm = await ormCastSheets.GetAll()
+    let respOrm = await ormFinalRecord.GetAll()
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
       message = respOrm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success GetAll CastSheets'
+      message = 'Success GetAll Final Records'
       data = respOrm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
@@ -38,30 +38,50 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { date, consumerGroup, consumers, deliveryAddress, castStatus } = req.body
-    if (date && consumerGroup) {
-      let respOrm = await ormCastSheets.Create(
+    const { date, consumer, deliveredKgs, supplementsKgs, priceKg, priceKgSuplements, totalEuros } =
+      req.body
+
+    if (
+      date &&
+      consumer &&
+      deliveredKgs &&
+      supplementsKgs &&
+      priceKg &&
+      priceKgSuplements &&
+      totalEuros
+    ) {
+      let respOrm = await ormFinalRecord.Create({
         date,
-        consumerGroup,
-        consumers,
-        deliveryAddress,
-        castStatus
-      )
+        consumer,
+        deliveredKgs,
+        supplementsKgs,
+        priceKg,
+        priceKgSuplements,
+        totalEuros
+      })
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
         message = respOrm.err.message
-        data = { date, consumerGroup, consumers, deliveryAddress, castStatus }
+        data = {
+          date,
+          consumer,
+          deliveredKgs,
+          supplementsKgs,
+          priceKg,
+          priceKgSuplements,
+          totalEuros
+        }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'CastSheet created'
+        message = 'Final record created'
         data = respOrm
         statuscode = enum_.CODE_CREATED
       }
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = `Date and consumerGroup are required: date=${date},consumerGroup=${consumerGroup}`
+      message = `All fields are required: date=${date}, consumer=${consumer}, deliveredKgs = ${deliveredKgs}, supplementsKgs=${supplementsKgs}, priceKg=${priceKg}, priceKgSuplements=${priceKgSuplements}, totalEuros=${totalEuros}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await ResponseService(status, errorcode, message, data)
@@ -83,14 +103,14 @@ export const Delete = async (req, res) => {
   try {
     const { id } = req.params
     if (id) {
-      let respOrm = await ormCastSheets.Delete(id)
+      let respOrm = await ormFinalRecord.Delete(id)
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
         message = respOrm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'CastSheet deleted'
+        message = 'Final record deleted'
         statuscode = enum_.CODE_OK
         data = respOrm
       }
@@ -119,19 +139,20 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { date, consumers, consumerGroup, castStatus, deliveryAddress } = req.body
+    const { date, consumer, deliveredKgs, supplementsKgs, priceKg, priceKgSuplements, totalEuros } =
+      req.body
 
-    const updatedCastSheets = {
-      date,
-      consumers,
-      consumerGroup,
-      castStatus,
-      deliveryAddress,
-      _id: id
-    }
-
-    if (id && updatedCastSheets) {
-      let respOrm = await ormCastSheets.Update(id, updatedCastSheets)
+    if (id) {
+      let respOrm = await ormFinalRecord.Update({
+        id,
+        date,
+        consumer,
+        deliveredKgs,
+        supplementsKgs,
+        priceKg,
+        priceKgSuplements,
+        totalEuros
+      })
 
       if (respOrm.err) {
         status = 'Failure'
@@ -139,9 +160,17 @@ export const Update = async (req, res) => {
         message = respOrm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'Castsheet updated'
+        message = 'Final record updated'
         statuscode = enum_.CODE_OK
-        data = updatedCastSheets
+        data = {
+          date,
+          consumer,
+          deliveredKgs,
+          supplementsKgs,
+          priceKg,
+          priceKgSuplements,
+          totalEuros
+        }
       }
     } else {
       status = 'Failure'
@@ -168,16 +197,45 @@ export const GetById = async (req, res) => {
   let response = {}
   try {
     const { id } = req.params
-    let respOrm = await ormCastSheets.GetById(id)
+    let respOrm = await ormFinalRecord.GetById(id)
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
       message = respOrm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success getting the castsheet'
+      message = 'Success getting bill'
       data = respOrm
       statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (error) {
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
+  }
+}
+
+export const GetByIdAndDate = async (req, res) => {
+  let status = 'Success'
+  let errorcode = ''
+  let message = ''
+  let data = ''
+  let statuscode = 0
+  let response = {}
+  try {
+    const { id, date } = req.params
+    let respOrm = await ormFinalRecord.GetByIdAndDate(id, date)
+    if (respOrm.err) {
+      status = 'Failure'
+      errorcode = respOrm.err.code
+      message = respOrm.err.message
+      statuscode = enum_.CODE_BAD_REQUEST
+    } else {
+      message = 'Success getting final record'
+      data = respOrm
+      statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)

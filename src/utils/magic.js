@@ -1,21 +1,23 @@
-const enum_ = require('./enum');
+import enum_ from './enum.js'
 
-exports.ResponseService = async (status, errorCode, message, data) => {
+export const ResponseService = async (status, errorCode, message, data) => {
   return await {
     status: status,
-    info: { errorCode: errorCode, message: message, data: data },
-  };
-};
+    info: { errorCode: errorCode, message: message, data: data }
+  }
+}
 
-exports.LogSuccess = (msg) => {
-  console.log(enum_.GREEN_LOG, msg);
-};
-exports.LogInfo = (msg) => {
-  console.log(enum_.CYAN_LOG, msg);
-};
-exports.LogWarning = (msg) => {
-  console.log(enum_.YELLOW_LOG, msg);
-};
-exports.LogDanger = (msg) => {
-  console.log(enum_.RED_LOG, msg);
-};
+export const LogSuccess = (msg) => {
+  console.log(enum_.GREEN_LOG, msg)
+}
+export const LogInfo = (msg) => {
+  console.log(enum_.CYAN_LOG, msg)
+}
+export const LogWarning = (msg) => {
+  console.log(enum_.YELLOW_LOG, msg)
+}
+export const LogDanger = (msg) => {
+  console.log(enum_.RED_LOG, msg)
+}
+
+export default ResponseService
