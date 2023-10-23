@@ -4,6 +4,7 @@ import * as consumer from '../domain/services/service-consumer.js'
 import * as consumerGroup from '../domain/services/service-consumerGroup.js'
 import * as castSheets from '../domain/services/service-castSheets.js'
 import * as bill from '../domain/services/service-bill.js'
+import * as finalRecord from '../domain/services/service-finalRecord.js'
 
 router.get('/consumer', consumer.GetAll)
 router.post('/consumer', consumer.Create)
@@ -30,5 +31,12 @@ router.delete('/bill/:id', bill.Delete)
 router.patch('/bill/:id', bill.Update)
 router.get('/bill/:id', bill.GetById)
 router.get('/bill/date/:date/:id', bill.GetByIdAndDate)
+
+router.get('/finalRecord', finalRecord.GetAll)
+router.post('/finalRecord', finalRecord.Create)
+router.delete('/finalRecord/:id', finalRecord.Delete)
+router.patch('/finalRecord/:id', finalRecord.Update)
+router.get('/finalRecord/:id', finalRecord.GetById)
+router.get('/finalRecord/date/:date/:id', finalRecord.GetByIdAndDate)
 
 export default router

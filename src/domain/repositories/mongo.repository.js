@@ -5,6 +5,7 @@ import consumer from '../entities/entity-consumer.js'
 import consumerGroup from '../entities/entity-consumerGroup.js'
 import castSheets from '../entities/entity-castSheets.js'
 import bill from '../entities/entity-bill.js'
+import finalRecord from '../entities/entity-finalRecord.js'
 
 import dotenv from 'dotenv'
 
@@ -24,6 +25,7 @@ if (config.db.mongodb && config.db.mongodb.length > 0) {
     db[c.nameconn].ConsumerGroup = consumerGroup(mongoose)
     db[c.nameconn].CastSheets = castSheets(mongoose)
     db[c.nameconn].Bill = bill(mongoose)
+    db[c.nameconn].FinalRecord = finalRecord(mongoose)
   })
 
   LogInfo('Conectado a la base de datos')
