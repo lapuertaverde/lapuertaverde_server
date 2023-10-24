@@ -1,6 +1,6 @@
 import { LogDanger, ResponseService } from '../../utils/magic.js'
 import enum_ from '../../utils/enum.js'
-import * as ormConsumer from '../orm/orm-consumer.js'
+import * as ormUser from '../orm/orm-user.js'
 
 export const GetAll = async (req, res) => {
   let status = 'Success'
@@ -11,7 +11,7 @@ export const GetAll = async (req, res) => {
   let response = {}
 
   try {
-    let respOrm = await ormConsumer.GetAll()
+    let respOrm = await ormUser.GetAll()
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
@@ -39,17 +39,17 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, email, phone, consumerGroup, address } = req.body
+    const { name, password, avatar } = req.body
 
     if (name) {
-      let respOrm = await ormConsumer.Create(name, email, phone, consumerGroup, address)
+      let respOrm = await ormUser.Create({ name, password, avatar })
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
         message = respOrm.err.messsage
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'Consumer created'
+        message = 'User created'
         data = respOrm
         statuscode = enum_.CODE_CREATED
       }
@@ -78,7 +78,7 @@ export const Delete = async (req, res) => {
   try {
     const { id } = req.params
     if (id) {
-      let respOrm = await ormConsumer.Delete(id)
+      let respOrm = await ormUser.Delete(id)
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
@@ -113,18 +113,10 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { name, address, email, phone, consumerGroup } = req.body
-    const updatedConsumer = {
-      name,
-      address,
-      email,
-      phone,
-      consumerGroup,
-      _id: id
-    }
+    const { name, password, avatar } = req.body
 
-    if (id && updatedConsumer) {
-      let respOrm = await ormConsumer.Update(id, updatedConsumer)
+    if (id) {
+      let respOrm = await ormUser.Update(id, { name, password, avatar })
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
@@ -134,9 +126,9 @@ export const Update = async (req, res) => {
         // console.log('resporm: ' + respOrm);
 
         if (Object.keys(respOrm).length) {
-          message = 'Consumer updated'
+          message = 'User updated'
           statuscode = enum_.CODE_OK
-          data = updatedConsumer
+          data = { id, name, password, avatar }
         } else {
           message = 'You are not authorized to update this user'
           statuscode = enum_.CODE_UNAUTHORIZED
@@ -167,45 +159,16 @@ export const GetById = async (req, res) => {
   let response = {}
   try {
     const { id } = req.params
-    let respOrm = await ormConsumer.GetById(id)
+    let respOrm = await ormUser.GetById(id)
     if (respOrm.err) {
       status = 'Failure'
       errorcode = respOrm.err.code
       message = respOrm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success getting the consumer'
+      message = 'Success getting the user'
       data = respOrm
       statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
-    }
-    response = await ResponseService(status, errorcode, message, data)
-    return res.status(statuscode).send(response)
-  } catch (error) {
-    LogDanger('error: ', error)
-    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
-    return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
-  }
-}
-
-export const GetByName = async (req, res) => {
-  let status = 'Success'
-  let errorcode = ''
-  let message = ''
-  let data = ''
-  let statuscode = 0
-  let response = {}
-  try {
-    const { name } = req.params
-    let respOrm = await ormConsumer.GetByName(name)
-    if (respOrm.err) {
-      status = 'Failure'
-      errorcode = respOrm.err.code
-      message = respOrm.err.message
-      statuscode = enum_.CODE_BAD_REQUEST
-    } else {
-      message = 'Success getting the consumer'
-      data = respOrm
-      statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
