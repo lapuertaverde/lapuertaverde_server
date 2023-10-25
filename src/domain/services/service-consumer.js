@@ -39,10 +39,38 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, email, phone, consumerGroup, address } = req.body
+    const {
+      name,
+      email,
+      dni,
+      CP,
+      phone,
+      consumerGroup,
+      address,
+      KgByDefault,
+      weeklyLog,
+      monthlyBills,
+      favorites,
+      discarded,
+      active
+    } = req.body
 
-    if (name) {
-      let respOrm = await ormConsumer.Create(name, email, phone, consumerGroup, address)
+    if (name && email && dni && CP && phone && consumerGroup && address && KgByDefault) {
+      let respOrm = await ormConsumer.Create({
+        name,
+        email,
+        dni,
+        CP,
+        phone,
+        consumerGroup,
+        address,
+        KgByDefault,
+        weeklyLog,
+        monthlyBills,
+        favorites,
+        discarded,
+        active
+      })
       if (respOrm.err) {
         status = 'Failure'
         errorcode = respOrm.err.code
@@ -56,7 +84,7 @@ export const Create = async (req, res) => {
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'name is required'
+      message = 'Maybe you forgot a mandatory field'
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await ResponseService(status, errorcode, message, data)
