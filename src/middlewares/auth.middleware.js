@@ -4,14 +4,14 @@ dotenv.config()
 
 import setError from '../utils/errors/setError.js'
 
-export const isAuth = async (req, res, next) => {
+export const isAuth = (req, res, next) => {
   const authorization = req.headers.authorization
 
   if (!authorization) return res.json(setError(401, 'Not authorized'))
 
   const splits = authorization.split(' ')
 
-  if (splits.length !== 2 || splits[0] !== 'Bearer') return res.json(setError(400, 'Not Bearer'))
+  if (splits.length !== 2 && splits[0] !== 'Bearer') return res.json(setError(400, 'Not Bearer'))
 
   const jwtStringify = splits[1]
 

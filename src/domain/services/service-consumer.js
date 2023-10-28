@@ -55,7 +55,7 @@ export const Create = async (req, res) => {
       active
     } = req.body
 
-    if (name && email && dni && CP && phone && consumerGroup && address && KgByDefault) {
+    if (name && email && CP && phone && consumerGroup && address && KgByDefault && active) {
       let respOrm = await ormConsumer.Create({
         name,
         email,

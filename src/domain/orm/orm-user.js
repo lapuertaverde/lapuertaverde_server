@@ -15,7 +15,6 @@ export const Login = async ({ name, password }) => {
         {
           id: userInfo._id
         },
-        //    req.app.get('secretKey'),
         process.env.SECRET,
         { expiresIn: '8h' }
       )
