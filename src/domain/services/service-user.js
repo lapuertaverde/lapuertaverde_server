@@ -2,6 +2,43 @@ import { LogDanger, ResponseService } from '../../utils/magic.js'
 import enum_ from '../../utils/enum.js'
 import * as ormUser from '../orm/orm-user.js'
 
+export const Login = async (req, res) => {
+  let status = 'Success',
+    errorcode = '',
+    message = '',
+    data = '',
+    statuscode = 0,
+    response = {}
+  try {
+    const { name, password, avatar } = req.body
+    if (name && password) {
+      let respOrm = await ormUser.Login({ name, password, avatar })
+
+      if (respOrm.err) {
+        status = 'Failure'
+        errorcode = respOrm.err.code
+        message = 'Incorrect Password'
+        statuscode = enum_.CODE_INVALID_PASSWORD
+      } else {
+        message = 'User logged in'
+        data = respOrm
+        statuscode = enum_.CODE_OK
+      }
+    } else {
+      status = 'Failure'
+      errorcode = enum_.ERROR_REQUIREDFIELD
+      message = 'All fields are required'
+      statuscode = enum_.CODE_BAD_REQUEST
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (err) {
+    return res
+      .status(enum_.CODE_INVALID_PASSWORD)
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'Incorrect Password', ''))
+  }
+}
+
 export const GetAll = async (req, res) => {
   let status = 'Success'
   let errorcode = ''
