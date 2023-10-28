@@ -6,20 +6,22 @@ import * as castSheets from '../domain/services/service-castSheets.js'
 import * as bill from '../domain/services/service-bill.js'
 import * as finalRecord from '../domain/services/service-finalRecord.js'
 import * as user from '../domain/services/service-user.js'
+import { isAuth } from '../middlewares/auth.middleware.js'
 
-router.get('/consumer', consumer.GetAll)
+router.get('/consumer', [isAuth], consumer.GetAll)
 router.post('/consumer', consumer.Create)
 router.delete('/consumer/:id', consumer.Delete)
 router.patch('/consumer/:id', consumer.Update)
 router.get('/consumer/:id', consumer.GetById)
 router.get('/consumer/name/:name', consumer.GetByName)
 
-router.get('/consumerGroup', consumerGroup.GetAll)
+router.get('/consumerGroup', [isAuth], consumerGroup.GetAll)
 router.post('/consumerGroup', consumerGroup.Create)
 router.delete('/consumerGroup/:id', consumerGroup.Delete)
 router.patch('/consumerGroup/:id', consumerGroup.Update)
 router.get('/consumerGroup/:id', consumerGroup.GetById)
 
+router.post('/user/login', user.Login)
 router.get('/user', user.GetAll)
 router.post('/user', user.Create)
 router.delete('/user/:id', user.Delete)

@@ -9,16 +9,40 @@ export const GetAll = async () => {
   }
 }
 
-export const Create = async (name, email, phone, consumerGroup, address) => {
+export const Create = async ({
+  name,
+  email,
+  dni,
+  CP,
+  phone,
+  consumerGroup,
+  address,
+  KgByDefault,
+  weeklyLog,
+  monthlyBills,
+  favorites,
+  discarded,
+  active
+}) => {
   try {
     const data = await new conn.connMongo.Consumer({
       name,
       email,
+      dni,
+      CP,
       phone,
       consumerGroup,
-      address
+      address,
+      KgByDefault,
+      weeklyLog,
+      monthlyBills,
+      favorites,
+      discarded,
+      active
     })
+
     data.save()
+
     if (consumerGroup) {
       const consumerGroupToUpdate = await conn.connMongo.ConsumerGroup.find({
         name: consumerGroup

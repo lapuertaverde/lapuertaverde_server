@@ -1,5 +1,33 @@
 import conn from '../repositories/mongo.repository.js'
 import { LogDanger } from '../../utils/magic.js'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
+
+export const Login = async ({ name, password }) => {
+  try {
+    const userInfo = await conn.connMongo.User.findOne({
+      name
+    })
+
+    if (password === userInfo.password) {
+      const token = jwt.sign(
+        {
+          id: userInfo._id
+        },
+        //    req.app.get('secretKey'),
+        process.env.SECRET,
+        { expiresIn: '8h' }
+      )
+      return token
+    } else {
+      return console.log('Incorrect password')
+    }
+  } catch (error) {
+    LogDanger('Cannot log in the user', error)
+    return { err: { code: 123, message: error } }
+  }
+}
 
 export const GetAll = async () => {
   try {
