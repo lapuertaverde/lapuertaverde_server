@@ -1,6 +1,6 @@
 import { LogDanger, ResponseService } from '../../utils/magic.js'
 import enum_ from '../../utils/enum.js'
-import * as ormUser from '../orm/orm-user.js'
+import * as odmUser from '../odm/odm-user.js'
 
 export const Login = async (req, res) => {
   let status = 'Success',
@@ -12,16 +12,16 @@ export const Login = async (req, res) => {
   try {
     const { name, password, avatar } = req.body
     if (name && password) {
-      let respOrm = await ormUser.Login({ name, password, avatar })
+      let respOdm = await odmUser.Login({ name, password, avatar })
 
-      if (respOrm.err) {
+      if (respOdm.err) {
         status = 'Failure'
-        errorcode = respOrm.err.code
+        errorcode = respOdm.err.code
         message = 'Incorrect Password'
         statuscode = enum_.CODE_INVALID_PASSWORD
       } else {
         message = 'User logged in'
-        data = respOrm
+        data = respOdm
         statuscode = enum_.CODE_OK
       }
     } else {
@@ -48,15 +48,15 @@ export const GetAll = async (req, res) => {
   let response = {}
 
   try {
-    let respOrm = await ormUser.GetAll()
-    if (respOrm.err) {
+    let respOdm = await odmUser.GetAll()
+    if (respOdm.err) {
       status = 'Failure'
-      errorcode = respOrm.err.code
-      message = respOrm.err.message
+      errorcode = respOdm.err.code
+      message = respOdm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
       message = 'Success GetAll Users'
-      data = respOrm
+      data = respOdm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
@@ -79,15 +79,15 @@ export const Create = async (req, res) => {
     const { name, password, avatar } = req.body
 
     if (name) {
-      let respOrm = await ormUser.Create({ name, password, avatar })
-      if (respOrm.err) {
+      let respOdm = await odmUser.Create({ name, password, avatar })
+      if (respOdm.err) {
         status = 'Failure'
-        errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        errorcode = respOdm.err.code
+        message = respOdm.err.messsage
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
         message = 'User created'
-        data = respOrm
+        data = respOdm
         statuscode = enum_.CODE_CREATED
       }
     } else {
@@ -115,16 +115,16 @@ export const Delete = async (req, res) => {
   try {
     const { id } = req.params
     if (id) {
-      let respOrm = await ormUser.Delete(id)
-      if (respOrm.err) {
+      let respOdm = await odmUser.Delete(id)
+      if (respOdm.err) {
         status = 'Failure'
-        errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        errorcode = respOdm.err.code
+        message = respOdm.err.messsage
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
         message = 'User deleted'
         statuscode = enum_.CODE_OK
-        data = respOrm
+        data = respOdm
       }
     } else {
       status = 'Failure'
@@ -153,16 +153,16 @@ export const Update = async (req, res) => {
     const { name, password, avatar } = req.body
 
     if (id) {
-      let respOrm = await ormUser.Update(id, { name, password, avatar })
-      if (respOrm.err) {
+      let respOdm = await odmUser.Update(id, { name, password, avatar })
+      if (respOdm.err) {
         status = 'Failure'
-        errorcode = respOrm.err.code
-        message = respOrm.err.messsage
+        errorcode = respOdm.err.code
+        message = respOdm.err.messsage
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        // console.log('resporm: ' + respOrm);
+        // console.log('resporm: ' + respOdm);
 
-        if (Object.keys(respOrm).length) {
+        if (Object.keys(respOdm).length) {
           message = 'User updated'
           statuscode = enum_.CODE_OK
           data = { id, name, password, avatar }
@@ -196,15 +196,15 @@ export const GetById = async (req, res) => {
   let response = {}
   try {
     const { id } = req.params
-    let respOrm = await ormUser.GetById(id)
-    if (respOrm.err) {
+    let respOdm = await odmUser.GetById(id)
+    if (respOdm.err) {
       status = 'Failure'
-      errorcode = respOrm.err.code
-      message = respOrm.err.message
+      errorcode = respOdm.err.code
+      message = respOdm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
       message = 'Success getting the user'
-      data = respOrm
+      data = respOdm
       statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
