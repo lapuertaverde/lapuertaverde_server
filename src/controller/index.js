@@ -8,7 +8,7 @@ import * as finalRecord from '../domain/services/service-finalRecord.js'
 import * as user from '../domain/services/service-user.js'
 import { isAuth } from '../middlewares/auth.middleware.js'
 
-router.get('/consumer', [isAuth], consumer.GetAll)
+router.get('/consumer', consumer.GetAll)
 router.post('/consumer', [isAuth], consumer.Create)
 router.delete('/consumer/:id', [isAuth], consumer.Delete)
 router.patch('/consumer/:id', [isAuth], consumer.Update)
@@ -22,7 +22,7 @@ router.patch('/consumerGroup/:id', [isAuth], consumerGroup.Update)
 router.get('/consumerGroup/:id', [isAuth], consumerGroup.GetById)
 
 router.post('/user/login', user.Login)
-router.get('/user', [isAuth], user.GetAll)
+router.get('/user', user.GetAll)
 router.post('/user', [isAuth], user.Create)
 router.delete('/user/:id', [isAuth], user.Delete)
 router.patch('/user/:id', [isAuth], user.Update)

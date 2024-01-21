@@ -55,7 +55,7 @@ export const Create = async (req, res) => {
       active
     } = req.body
 
-    if (name && email && CP && phone && consumerGroup && address && KgByDefault && active) {
+    if (name && email && CP && phone && consumerGroup && address && KgByDefault) {
       let respOdm = await odmConsumer.Create({
         name,
         email,
@@ -113,6 +113,7 @@ export const Delete = async (req, res) => {
         message = respOdm.err.messsage
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
+        console.log(respOdm)
         message = 'User deleted'
         statuscode = enum_.CODE_OK
         data = respOdm
