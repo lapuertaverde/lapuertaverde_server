@@ -3,7 +3,8 @@ const userSchema = (db) => {
     {
       name: { type: String, required: true, trim: true },
       password: { type: String, required: true, trim: true },
-      avatar: { type: String, trim: true }
+      avatar: { type: String, trim: true },
+      role: { type: Boolean, trim: true }
     },
     {
       timestamps: true
