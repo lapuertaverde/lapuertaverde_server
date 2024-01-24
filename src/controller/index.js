@@ -7,8 +7,9 @@ import * as bill from '../domain/services/service-bill.js'
 import * as finalRecord from '../domain/services/service-finalRecord.js'
 import * as user from '../domain/services/service-user.js'
 import { isAuth } from '../middlewares/auth.middleware.js'
+import isAdminAuth from '../middlewares/adminAuth.middleware.js'
 
-router.get('/consumer', consumer.GetAll)
+router.get('/consumer', [isAdminAuth], consumer.GetAll)
 router.post('/consumer', [isAuth], consumer.Create)
 router.delete('/consumer/:id', [isAuth], consumer.Delete)
 router.patch('/consumer/:id', [isAuth], consumer.Update)
@@ -25,7 +26,7 @@ router.post('/user/login', user.Login)
 router.get('/user', user.GetAll)
 router.post('/user', [isAuth], user.Create)
 router.delete('/user/:id', [isAuth], user.Delete)
-router.patch('/user/:id', [isAuth], user.Update)
+router.patch('/user/:id', user.Update)
 router.get('/user/:id', [isAuth], user.GetById)
 
 router.get('/castSheets', [isAuth], castSheets.GetAll)

@@ -4,4 +4,5 @@ const setError = (code, message) => {
   error.message = message
   return error
 }
+
 export default setError
