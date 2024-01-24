@@ -49,11 +49,22 @@ export const Create = async ({
       })
       //Suponiendo que un consumidor no pueda estar en dos grupos a la vez
       const { _id, consumers } = await consumerGroupToUpdate[0]
+
       await conn.connMongo.ConsumerGroup.findByIdAndUpdate(_id, {
         ...consumerGroupToUpdate,
         consumers: [...consumers, data._id]
       })
     }
+
+    const newUser = await conn.connMongo.User({
+      name,
+      password: name,
+      role: 'Consumer',
+      avatar: name[0].toUpperCase()
+    })
+
+    newUser.save()
+
     return data
   } catch (error) {
     LogDanger('Cannot Create consumer', error)

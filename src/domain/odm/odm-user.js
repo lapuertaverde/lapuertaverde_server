@@ -10,10 +10,14 @@ export const Login = async ({ name, password }) => {
       name
     })
 
+    console.log(userInfo)
+
     if (password === userInfo.password) {
       const token = jwt.sign(
         {
-          id: userInfo._id
+          id: userInfo._id,
+          name: userInfo.name,
+          role: userInfo.role
         },
         process.env.SECRET,
         { expiresIn: '8h' }
@@ -36,13 +40,15 @@ export const GetAll = async () => {
   }
 }
 
-export const Create = async ({ name, password, avatar }) => {
+export const Create = async ({ name, password, avatar, role }) => {
   try {
     const data = await new conn.connMongo.User({
       name,
       password,
-      avatar
+      avatar,
+      role: role || 'Consumer'
     })
+
     data.save()
 
     return data
@@ -61,9 +67,9 @@ export const Delete = async (id) => {
   }
 }
 
-export const Update = async (id, { name, password, avatar }) => {
+export const Update = async (id, { name, password, avatar, role }) => {
   try {
-    return await conn.connMongo.User.findByIdAndUpdate(id, { name, password, avatar })
+    return await conn.connMongo.User.findByIdAndUpdate(id, { name, password, avatar, role })
   } catch (error) {
     LogDanger('Cannot Update consumer', error)
     return { err: { code: 123, message: error } }

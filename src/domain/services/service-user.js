@@ -10,9 +10,9 @@ export const Login = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, password, avatar } = req.body
+    const { name, password, avatar, role } = req.body
     if (name && password) {
-      let respOdm = await odmUser.Login({ name, password, avatar })
+      let respOdm = await odmUser.Login({ name, password, avatar, role })
 
       if (respOdm.err) {
         status = 'Failure'
@@ -76,10 +76,10 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, password, avatar } = req.body
+    const { name, password, avatar, role } = req.body
 
     if (name) {
-      let respOdm = await odmUser.Create({ name, password, avatar })
+      let respOdm = await odmUser.Create({ name, password, avatar, role })
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
@@ -150,10 +150,10 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { name, password, avatar } = req.body
+    const { name, password, avatar, role } = req.body
 
     if (id) {
-      let respOdm = await odmUser.Update(id, { name, password, avatar })
+      let respOdm = await odmUser.Update(id, { name, password, avatar, role })
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
