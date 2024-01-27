@@ -10,8 +10,6 @@ export const Login = async ({ name, password }) => {
       name
     })
 
-    console.log(userInfo)
-
     if (password === userInfo.password) {
       const token = jwt.sign(
         {
@@ -22,11 +20,12 @@ export const Login = async ({ name, password }) => {
         process.env.SECRET,
         { expiresIn: '8h' }
       )
-      return token
+      return { token, role: userInfo.role || 'Consumer' }
     } else {
       return console.log('Incorrect password')
     }
   } catch (error) {
+    console.log(error)
     LogDanger('Cannot log in the user', error)
     return { err: { code: 123, message: error } }
   }
