@@ -234,7 +234,7 @@ export const GetByName = async (req, res) => {
     } else {
       message = 'Success getting the consumer'
       data = respOdm
-      statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
+      statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
