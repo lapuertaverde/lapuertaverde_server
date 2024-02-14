@@ -20,7 +20,15 @@ export const Login = async ({ name, password }) => {
         process.env.SECRET,
         { expiresIn: '8h' }
       )
-      return { token, role: userInfo.role || 'Consumer' }
+
+      let consumer
+      if (userInfo.role == 'Consumer') {
+        consumer = await conn.connMongo.Consumer.findOne({
+          name
+        })
+      }
+
+      return { token, consumer: consumer?._id || '', role: userInfo.role || 'Consumer' }
     } else {
       return console.log('Incorrect password')
     }

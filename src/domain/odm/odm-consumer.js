@@ -86,16 +86,16 @@ export const Update = async (id, updatedUser) => {
     return await conn.connMongo.Consumer.findByIdAndUpdate(id, updatedUser)
   } catch (error) {
     LogDanger('Cannot Update consumer', error)
-    return await { err: { code: 123, message: error } }
+    return { err: { code: 123, message: error } }
   }
 }
 
 export const GetById = async (id) => {
   try {
-    return await conn.connMongo.Consumer.findById(id)
+    return await conn.connMongo.Consumer.findById(id).populate('monthlyBills weeklyLog')
   } catch (error) {
     LogDanger('Cannot get the consumer by its ID', error)
-    return await { err: { code: 123, message: error } }
+    return { err: { code: 123, message: error } }
   }
 }
 
@@ -104,6 +104,6 @@ export const GetByName = async (name) => {
     return await conn.connMongo.Consumer.find({ name })
   } catch (error) {
     LogDanger('Cannot get the consumer by its name', error)
-    return await { err: { code: 123, message: error } }
+    return { err: { code: 123, message: error } }
   }
 }
