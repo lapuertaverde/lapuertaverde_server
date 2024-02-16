@@ -10,13 +10,13 @@ import { isAuth } from '../middlewares/auth.middleware.js'
 import isAdminAuth from '../middlewares/adminAuth.middleware.js'
 
 router.get('/consumer', [isAdminAuth], consumer.GetAll)
-router.post('/consumer', [isAuth], consumer.Create)
+router.post('/consumer', consumer.Create)
 router.delete('/consumer/:id', [isAuth], consumer.Delete)
 router.patch('/consumer/:id', [isAuth], consumer.Update)
 router.get('/consumer/:id', [isAuth], consumer.GetById)
 router.get('/consumer/name/:name', [isAuth], consumer.GetByName)
 
-router.get('/consumerGroup', [isAuth], consumerGroup.GetAll)
+router.get('/consumerGroup', consumerGroup.GetAll)
 router.post('/consumerGroup', [isAuth], consumerGroup.Create)
 router.delete('/consumerGroup/:id', [isAuth], consumerGroup.Delete)
 router.patch('/consumerGroup/:id', [isAuth], consumerGroup.Update)
@@ -24,7 +24,7 @@ router.get('/consumerGroup/:id', [isAuth], consumerGroup.GetById)
 
 router.post('/user/login', user.Login)
 router.get('/user', user.GetAll)
-router.post('/user', [isAuth], user.Create)
+router.post('/user', user.Create)
 router.delete('/user/:id', [isAuth], user.Delete)
 router.patch('/user/:id', user.Update)
 router.get('/user/:id', [isAuth], user.GetById)

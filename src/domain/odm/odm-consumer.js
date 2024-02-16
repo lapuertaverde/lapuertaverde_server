@@ -25,6 +25,7 @@ export const Create = async ({
   active
 }) => {
   try {
+    const avatar = name[0].toUpperCase()
     const data = await new conn.connMongo.Consumer({
       name,
       email,
@@ -38,17 +39,16 @@ export const Create = async ({
       monthlyBills,
       favorites,
       discarded,
-      active
+      active,
+      avatar
     })
 
     data.save()
 
     if (consumerGroup) {
-      const consumerGroupToUpdate = await conn.connMongo.ConsumerGroup.find({
-        name: consumerGroup
-      })
+      const consumerGroupToUpdate = await conn.connMongo.ConsumerGroup.findById(consumerGroup)
       //Suponiendo que un consumidor no pueda estar en dos grupos a la vez
-      const { _id, consumers } = await consumerGroupToUpdate[0]
+      const { _id, consumers } = await consumerGroupToUpdate
 
       await conn.connMongo.ConsumerGroup.findByIdAndUpdate(_id, {
         ...consumerGroupToUpdate,
@@ -58,9 +58,10 @@ export const Create = async ({
 
     const newUser = await conn.connMongo.User({
       name,
-      password: name,
+      password: password || name,
+      email,
       role: 'Consumer',
-      avatar: name[0].toUpperCase()
+      avatar
     })
 
     newUser.save()
