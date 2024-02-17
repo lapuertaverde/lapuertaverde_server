@@ -33,7 +33,6 @@ export const Login = async ({ email, password }) => {
       return console.log('Incorrect password')
     }
   } catch (error) {
-    console.log(error)
     LogDanger('Cannot log in the user', error)
     return { err: { code: 123, message: error } }
   }
