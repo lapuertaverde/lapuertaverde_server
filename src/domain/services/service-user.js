@@ -10,9 +10,9 @@ export const Login = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, password, avatar, role } = req.body
-    if (name && password) {
-      let respOdm = await odmUser.Login({ name, password, avatar, role })
+    const { password, email } = req.body
+    if (email && password) {
+      let respOdm = await odmUser.Login({ email, password })
 
       if (respOdm.err) {
         status = 'Failure'
@@ -76,10 +76,10 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, password, avatar, role } = req.body
+    const { name, password, avatar, role, email } = req.body
 
     if (name) {
-      let respOdm = await odmUser.Create({ name, password, avatar, role })
+      let respOdm = await odmUser.Create({ name, password, avatar, role, email })
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code

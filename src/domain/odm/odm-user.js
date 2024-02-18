@@ -4,28 +4,35 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-export const Login = async ({ name, password }) => {
+export const Login = async ({ email, password }) => {
   try {
     const userInfo = await conn.connMongo.User.findOne({
-      name
+      email
     })
 
     if (password === userInfo.password) {
       const token = jwt.sign(
         {
           id: userInfo._id,
-          name: userInfo.name,
+          email: userInfo.email,
           role: userInfo.role
         },
         process.env.SECRET,
         { expiresIn: '8h' }
       )
-      return { token, role: userInfo.role || 'Consumer' }
+
+      let consumer
+      if (userInfo.role == 'Consumer') {
+        consumer = await conn.connMongo.Consumer.findOne({
+          email
+        })
+      }
+
+      return { token, consumer: consumer?._id || '', role: userInfo.role || 'Consumer' }
     } else {
       return console.log('Incorrect password')
     }
   } catch (error) {
-    console.log(error)
     LogDanger('Cannot log in the user', error)
     return { err: { code: 123, message: error } }
   }
@@ -39,14 +46,9 @@ export const GetAll = async () => {
   }
 }
 
-export const Create = async ({ name, password, avatar, role }) => {
+export const Create = async (user) => {
   try {
-    const data = await new conn.connMongo.User({
-      name,
-      password,
-      avatar,
-      role: role || 'Consumer'
-    })
+    const data = await new conn.connMongo.User(user)
 
     data.save()
 

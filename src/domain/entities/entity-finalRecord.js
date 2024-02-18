@@ -2,7 +2,7 @@ const finalRecord = (db) => {
   const finalRecord = new db.Schema(
     {
       date: { type: String, required: true, trim: true },
-      consumer: { type: String, required: true, trim: true },
+      consumer: { type: db.Schema.Types.ObjectId, ref: 'Consumer' },
       deliveredKgs: { type: Number, required: true, trim: true },
       supplementsKgs: { type: Number, required: true, trim: true },
       priceKg: { type: Number, required: true, trim: true },
