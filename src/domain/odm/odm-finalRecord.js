@@ -39,6 +39,36 @@ export const Create = async ({
         totalEuros
       })
       data.save()
+
+      const consumerUpdate = await conn.connMongo.Consumer.findByIdAndUpdate(consumer, {
+        orderInProgress: data._id
+      }).populate('consumerGroup')
+
+      const castSheet = await conn.connMongo.CastSheets.findOne({
+        consumers: consumerUpdate._id,
+        status: 'Previo'
+      })
+
+      console.log(castSheet)
+      if (!castSheet) {
+        const newCastSheet = await new conn.connMongo.CastSheets({
+          date,
+          consumerGroup: consumerUpdate.consumerGroup._id,
+          consumers: [consumer],
+          deliveryAddress: consumerUpdate.consumerGroup.deliveryAddress
+        })
+
+        console.log('nueva hoja', newCastSheet)
+      } else {
+        // La hoja de reparto esta creada pero el consumidor no aparece en ella porque aun no ha hecho pedido
+        if (!castSheet.consumer.find((idConsumer) => idConsumer == consumer)) {
+          await conn.connMongo.CastSheets.findByIdAndUpdate(castSheet._id, {
+            $push: { consumers: consumer }
+          })
+
+          console.log('Hoja actualizada', await conn.connMongo.CastSheet.findById(castSheet._id))
+        }
+      }
       return data
     }
   } catch (error) {
