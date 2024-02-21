@@ -84,6 +84,12 @@ export const Create = async ({
 export const Delete = async (id) => {
   try {
     const finalRecordDeleted = await conn.connMongo.FinalRecord.findByIdAndDelete(id)
+
+    await conn.connMongo.Consumer.updateOne({ weeklyLog: id }, { $pull: { weeklyLog: id } })
+    await conn.connMongo.Consumer.updateOne(
+      { orderInProgress: id },
+      { $pull: { orderInProgress: id } }
+    )
     if (finalRecordDeleted) return finalRecordDeleted
   } catch (error) {
     LogDanger('Cannot Delete final record', error)
