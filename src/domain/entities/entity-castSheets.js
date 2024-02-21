@@ -2,10 +2,16 @@ const castSheets = (db) => {
   const castSheets = new db.Schema(
     {
       date: { type: String, required: true, trim: true },
-      consumerGroup: { type: String, required: true, trim: true },
+      consumerGroup: { type: db.Schema.Types.ObjectId, ref: 'ConsumerGroup' },
       consumers: [{ type: db.Schema.Types.ObjectId, ref: 'Consumer' }],
       deliveryAddress: { type: String, required: true, trim: true },
-      castStatus: { type: Boolean, required: true, trim: true }
+      castStatus: {
+        type: String,
+        enum: ['Previo', 'Repartido'],
+        default: 'Previo',
+        required: true,
+        trim: true
+      }
     },
     {
       timestamps: true

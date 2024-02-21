@@ -3,9 +3,10 @@ const billSchema = (db) => {
     {
       date: { type: String, required: true, trim: true },
       consumerName: { type: String, required: true, trim: true },
+      consumer: { type: db.Schema.Types.ObjectId, ref: 'Consumer' },
       total: { type: Number, required: true, trim: true },
-      billStatus: { type: Boolean, required: true, trim: true }
-      // registers: [{ type: db.Schema.Types.ObjectId, ref: 'Registers' }]
+      billStatus: { type: Boolean, required: true, trim: true },
+      registers: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
     },
     {
       timestamps: true
