@@ -91,7 +91,7 @@ export const Update = async (id, updatedUser) => {
 
 export const GetById = async (id) => {
   try {
-    return await conn.connMongo.Consumer.findById(id).populate('monthlyBills weeklyLog')
+    return await conn.connMongo.Consumer.findById(id).populate('bills weeklyLog orderInProgress')
   } catch (error) {
     LogDanger('Cannot get the consumer by its ID', error)
     return { err: { code: 123, message: error } }
