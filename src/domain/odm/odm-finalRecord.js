@@ -40,17 +40,19 @@ export const Create = async ({
       })
       data.save()
 
+      // Actualizamos el consumidor que ha realizado el pedido
       const consumerUpdate = await conn.connMongo.Consumer.findByIdAndUpdate(consumer, {
-        orderInProgress: data._id
+        $push: { orderInProgress: data._id }
       }).populate('consumerGroup')
 
+      // Buscamos si hay una hoja de reparto para el grupo
       const castSheet = await conn.connMongo.CastSheets.findOne({
-        consumers: consumerUpdate._id,
-        status: 'Previo'
+        status: 'Previo',
+        consumerGroup: consumerUpdate.consumerGroup
       })
 
-      console.log(castSheet)
       if (!castSheet) {
+        // Creamos la hoja de reparto
         const newCastSheet = await new conn.connMongo.CastSheets({
           date,
           consumerGroup: consumerUpdate.consumerGroup._id,
@@ -58,15 +60,18 @@ export const Create = async ({
           deliveryAddress: consumerUpdate.consumerGroup.deliveryAddress
         })
 
-        console.log('nueva hoja', newCastSheet)
+        newCastSheet.save()
+
+        // Metemos esta hoja de reparto en el grupo correspondiente
+        await conn.connMongo.ConsumerGroup.findByIdAndUpdate(newCastSheet.consumerGroup, {
+          $push: { castSheets: newCastSheet._id }
+        })
       } else {
         // La hoja de reparto esta creada pero el consumidor no aparece en ella porque aun no ha hecho pedido
-        if (!castSheet.consumer.find((idConsumer) => idConsumer == consumer)) {
+        if (!castSheet.consumers.find((idConsumer) => idConsumer == consumer)) {
           await conn.connMongo.CastSheets.findByIdAndUpdate(castSheet._id, {
             $push: { consumers: consumer }
           })
-
-          console.log('Hoja actualizada', await conn.connMongo.CastSheet.findById(castSheet._id))
         }
       }
       return data

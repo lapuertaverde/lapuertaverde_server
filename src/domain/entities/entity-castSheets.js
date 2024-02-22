@@ -5,6 +5,7 @@ const castSheets = (db) => {
       consumerGroup: { type: db.Schema.Types.ObjectId, ref: 'ConsumerGroup' },
       consumers: [{ type: db.Schema.Types.ObjectId, ref: 'Consumer' }],
       deliveryAddress: { type: String, required: true, trim: true },
+      bills: [{ type: db.Schema.Types.ObjectId, ref: 'Bill' }],
       castStatus: {
         type: String,
         enum: ['Previo', 'Repartido'],

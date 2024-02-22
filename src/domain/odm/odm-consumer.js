@@ -48,11 +48,9 @@ export const Create = async ({
     if (consumerGroup) {
       const consumerGroupToUpdate = await conn.connMongo.ConsumerGroup.findById(consumerGroup)
       //Suponiendo que un consumidor no pueda estar en dos grupos a la vez
-      const { _id, consumers } = await consumerGroupToUpdate
 
-      await conn.connMongo.ConsumerGroup.findByIdAndUpdate(_id, {
-        ...consumerGroupToUpdate,
-        consumers: [...consumers, data._id]
+      await conn.connMongo.ConsumerGroup.findByIdAndUpdate(consumerGroupToUpdate._id, {
+        $push: { consumers: data._id }
       })
     }
 

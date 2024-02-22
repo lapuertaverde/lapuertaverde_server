@@ -34,6 +34,7 @@ router.post('/castSheets', [isAuth], castSheets.Create)
 router.delete('/castSheets/:id', [isAuth], castSheets.Delete)
 router.patch('/castSheets/:id', [isAuth], castSheets.Update)
 router.get('/castSheets/:id', [isAuth], castSheets.GetById)
+router.patch('/castSheets/changeStatus/:id', [isAdminAuth], castSheets.ChangeStatus)
 
 router.get('/bill', [isAuth], bill.GetAll)
 router.post('/bill', [isAuth], bill.Create)

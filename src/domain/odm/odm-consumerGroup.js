@@ -58,7 +58,7 @@ export const Update = async (id, body) => {
     const consumerGroup = {
       name: body.name ? body.name : groupDB.name,
       castSheets: body.castSheets ? body.castSheets : groupDB.castSheets,
-      consumers: body.consumers ? body.consumers : groupDB.consumers,
+      consumers: body.consumers ? [...groupDB.consumers, body.consumers] : groupDB.consumers,
       _id: id,
       deliveryAddress: body.deliveryAddress ? body.deliveryAddress : groupDB.deliveryAddress
     }
