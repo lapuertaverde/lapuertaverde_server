@@ -39,6 +39,41 @@ export const Create = async ({
         totalEuros
       })
       data.save()
+
+      // Actualizamos el consumidor que ha realizado el pedido
+      const consumerUpdate = await conn.connMongo.Consumer.findByIdAndUpdate(consumer, {
+        $push: { orderInProgress: data._id }
+      }).populate('consumerGroup')
+
+      // Buscamos si hay una hoja de reparto para el grupo
+      const castSheet = await conn.connMongo.CastSheets.findOne({
+        status: 'Previo',
+        consumerGroup: consumerUpdate.consumerGroup
+      })
+
+      if (!castSheet) {
+        // Creamos la hoja de reparto
+        const newCastSheet = await new conn.connMongo.CastSheets({
+          date,
+          consumerGroup: consumerUpdate.consumerGroup._id,
+          consumers: [consumer],
+          deliveryAddress: consumerUpdate.consumerGroup.deliveryAddress
+        })
+
+        newCastSheet.save()
+
+        // Metemos esta hoja de reparto en el grupo correspondiente
+        await conn.connMongo.ConsumerGroup.findByIdAndUpdate(newCastSheet.consumerGroup, {
+          $push: { castSheets: newCastSheet._id }
+        })
+      } else {
+        // La hoja de reparto esta creada pero el consumidor no aparece en ella porque aun no ha hecho pedido
+        if (!castSheet.consumers.find((idConsumer) => idConsumer == consumer)) {
+          await conn.connMongo.CastSheets.findByIdAndUpdate(castSheet._id, {
+            $push: { consumers: consumer }
+          })
+        }
+      }
       return data
     }
   } catch (error) {
@@ -54,6 +89,12 @@ export const Create = async ({
 export const Delete = async (id) => {
   try {
     const finalRecordDeleted = await conn.connMongo.FinalRecord.findByIdAndDelete(id)
+
+    await conn.connMongo.Consumer.updateOne({ weeklyLog: id }, { $pull: { weeklyLog: id } })
+    await conn.connMongo.Consumer.updateOne(
+      { orderInProgress: id },
+      { $pull: { orderInProgress: id } }
+    )
     if (finalRecordDeleted) return finalRecordDeleted
   } catch (error) {
     LogDanger('Cannot Delete final record', error)

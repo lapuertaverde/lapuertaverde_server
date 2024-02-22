@@ -40,9 +40,9 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { name, consumers, castSheets } = req.body
+    const { name, consumers, castSheets, deliveryAddress } = req.body
     if (name) {
-      let respOdm = await odmConsumerGroup.Create(name, consumers, castSheets)
+      let respOdm = await odmConsumerGroup.Create(name, consumers, castSheets, deliveryAddress)
       if (respOdm.err) {
         console.log('respOdm.err', respOdm.err)
         status = 'Failure'
@@ -118,16 +118,9 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { name, castSheets, consumers } = req.body
-    const updatedConsumerGroup = {
-      name,
-      castSheets,
-      consumers,
-      _id: id
-    }
 
-    if (id && updatedConsumerGroup) {
-      let respOdm = await odmConsumerGroup.Update(id, updatedConsumerGroup)
+    if (id && req.body) {
+      let respOdm = await odmConsumerGroup.Update(id, req.body)
 
       if (respOdm?.err) {
         status = 'Failure'

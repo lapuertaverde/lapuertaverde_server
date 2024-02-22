@@ -7,7 +7,8 @@ const finalRecord = (db) => {
       supplementsKgs: { type: Number, required: true, trim: true },
       priceKg: { type: Number, required: true, trim: true },
       priceKgSuplements: { type: Number, required: true, trim: true },
-      totalEuros: { type: Number, required: true, trim: true }
+      totalEuros: { type: Number, required: true, trim: true },
+      bill: { type: db.Schema.Types.ObjectId, ref: 'Bill' }
     },
     {
       timestamps: true

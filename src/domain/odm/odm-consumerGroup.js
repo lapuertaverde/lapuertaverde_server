@@ -51,9 +51,20 @@ export const Delete = async (id) => {
   }
 }
 
-export const Update = async (id, consumerGroup) => {
+export const Update = async (id, body) => {
   try {
-    return await conn.connMongo.ConsumerGroup.findByIdAndUpdate(id, consumerGroup)
+    const groupDB = await conn.connMongo.ConsumerGroup.findById(id)
+
+    const consumerGroup = {
+      name: body.name ? body.name : groupDB.name,
+      castSheets: body.castSheets ? body.castSheets : groupDB.castSheets,
+      consumers: body.consumers ? [...groupDB.consumers, body.consumers] : groupDB.consumers,
+      _id: id,
+      deliveryAddress: body.deliveryAddress ? body.deliveryAddress : groupDB.deliveryAddress
+    }
+    await conn.connMongo.ConsumerGroup.findByIdAndUpdate(id, consumerGroup)
+
+    return await conn.connMongo.ConsumerGroup.findById(id)
   } catch (error) {
     LogDanger('Cannot Update consumer group', error)
     return { err: { code: 123, message: error } }

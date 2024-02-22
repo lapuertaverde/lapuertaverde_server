@@ -68,3 +68,116 @@ export const GetById = async (id) => {
     return { err: { code: 123, message: error } }
   }
 }
+
+export const ChangeStatus = async (id) => {
+  try {
+    const castSheets = await conn.connMongo.CastSheets.findById(id)
+      .populate('bills')
+      .populate({
+        path: 'consumers',
+        populate: { path: 'orderInProgress' }
+      })
+      .populate({
+        path: 'consumers',
+        populate: { path: 'weeklyLog' }
+      })
+
+    // Depende del status hará una cosa u otra
+    if (castSheets.castStatus === 'Previo') {
+      // Lo cambiamos a "Repartido"
+
+      await conn.connMongo.CastSheets.findByIdAndUpdate(id, { castStatus: 'Repartido' })
+
+      for (const consumer of castSheets.consumers) {
+        // Por cada consumidor de esta ruta hay que ver sus registros en curso y crear una bill
+        // cada bill generada se meterá en el campo bills de esta hoja de reparto
+
+        const newBill = await new conn.connMongo.Bill({
+          date: castSheets.date,
+          consumerName: consumer.name,
+          consumer: consumer._id,
+          total: 0
+        })
+
+        await newBill.save()
+        let total = 0
+
+        // Actualizamos hoja de reparto
+        await conn.connMongo.CastSheets.findByIdAndUpdate(id, { $push: { bills: newBill._id } })
+
+        // Actualizamos al consumer
+        await conn.connMongo.Consumer.findByIdAndUpdate(consumer._id, {
+          $push: { bills: newBill._id }
+        })
+
+        for (const order of consumer.orderInProgress) {
+          total += order.totalEuros
+
+          //  Cambiamos los pedidos en curso a pedidos en el consumer
+          await conn.connMongo.Consumer.findByIdAndUpdate(consumer._id, {
+            $push: { weeklyLog: order._id },
+            $pull: { orderInProgress: order._id }
+          })
+
+          // Metemos los pedidos en la bill generada
+          await conn.connMongo.Bill.findByIdAndUpdate(newBill._id, {
+            $push: { registers: order._id }
+          })
+
+          // Metemos la factura en el pedido correspondiente
+          await conn.connMongo.FinalRecord.findByIdAndUpdate(order._id, {
+            $push: { bill: newBill._id }
+          })
+        }
+
+        await conn.connMongo.Bill.findByIdAndUpdate(newBill._id, { total: total })
+      }
+      return await conn.connMongo.CastSheets.findById(id).populate('consumers')
+    } else {
+      // cambiamos el status a "Previo"
+      // Ya se han generado las bill, hay que borrarlas y devolver los pedidos a orderInProgress
+      await conn.connMongo.CastSheets.findByIdAndUpdate(id, { castStatus: 'Previo' })
+
+      for (const bill of castSheets.bills) {
+        await conn.connMongo.Consumer.updateOne(
+          { bills: bill._id },
+          {
+            $pull: { bills: bill._id }
+          }
+        )
+
+        // Actualizamos hoja de reparto
+        await conn.connMongo.CastSheets.findByIdAndUpdate(id, {
+          $pull: { bills: bill._id }
+        })
+
+        // Actualizamos pedido que tienen esta factura
+        await conn.connMongo.FinalRecord.updateOne(
+          { bill: bill._id },
+          {
+            $pull: { bill: bill._id }
+          }
+        )
+
+        // Recorremos pedidos y por cada uno actualizamos al consumer
+
+        for (const register of bill.registers) {
+          await conn.connMongo.Consumer.updateOne(
+            { weeklyLog: register },
+            {
+              $pull: { weeklyLog: register },
+              $push: { orderInProgress: register }
+            }
+          )
+        }
+
+        // Borramos esta bill
+        await conn.connMongo.Bill.findByIdAndDelete(bill._id)
+      }
+      return await conn.connMongo.CastSheets.findById(id).populate('consumers')
+    }
+  } catch (error) {
+    magic.LogDanger('Cannot update castSheets status', error)
+    return { err: { code: 123, message: error } }
+  }
+}
