@@ -3,7 +3,8 @@ const consumerGroupSchema = (db) => {
     {
       name: { type: String, required: true, trim: true },
       consumers: [{ type: db.Schema.Types.ObjectId, ref: 'Consumer' }],
-      castSheets: [{ type: db.Schema.Types.ObjectId, ref: 'CastSheets' }]
+      castSheets: [{ type: db.Schema.Types.ObjectId, ref: 'CastSheets' }],
+      deliveryAddress: { type: String, required: true, trim: true }
     },
     {
       timestamps: true
