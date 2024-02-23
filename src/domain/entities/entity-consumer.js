@@ -15,7 +15,8 @@ const consumerSchema = (db) => {
       favorites: { type: String, trim: true },
       discarded: { type: String, trim: true },
       active: { type: Boolean, required: true, trim: true },
-      orderInProgress: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
+      orderInProgress: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }],
+      orderFavs: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
     },
     {
       timestamps: true

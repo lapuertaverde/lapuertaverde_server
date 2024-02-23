@@ -6,6 +6,7 @@ import * as castSheets from '../domain/services/service-castSheets.js'
 import * as bill from '../domain/services/service-bill.js'
 import * as finalRecord from '../domain/services/service-finalRecord.js'
 import * as user from '../domain/services/service-user.js'
+import * as product from '../domain/services/service-product.js'
 import { isAuth } from '../middlewares/auth.middleware.js'
 import isAdminAuth from '../middlewares/adminAuth.middleware.js'
 
@@ -49,5 +50,13 @@ router.delete('/finalRecord/:id', [isAuth], finalRecord.Delete)
 router.patch('/finalRecord/:id', [isAuth], finalRecord.Update)
 router.get('/finalRecord/:id', [isAuth], finalRecord.GetById)
 router.get('/finalRecord/date/:date/:id', [isAuth], finalRecord.GetByIdAndDate)
+
+router.get('/product', [isAuth], product.GetAll)
+router.post('/product', [isAdminAuth], product.Create)
+router.delete('/product/:id', [isAdminAuth], product.Delete)
+router.patch('/product/:id', [isAdminAuth], product.Update)
+router.get('/product/:id', [isAuth], product.GetById)
+router.get('/product/name/:name', [isAuth], product.GetByName)
+router.patch('/product/changeAvailability/:id', [isAdminAuth], product.ChangeAvailability)
 
 export default router
