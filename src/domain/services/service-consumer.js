@@ -142,13 +142,36 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { name, address, email, phone, consumerGroup } = req.body
+    const {
+      name,
+      address,
+      email,
+      phone,
+      consumerGroup,
+      CP,
+      KgByDefault,
+      bills,
+      weeklyLog,
+      active,
+      dni,
+      favorites,
+      discarded
+    } = req.body
+
     const updatedConsumer = {
       name,
       address,
       email,
       phone,
       consumerGroup,
+      CP,
+      KgByDefault,
+      bills,
+      weeklyLog,
+      active,
+      dni,
+      favorites,
+      discarded,
       _id: id
     }
 
