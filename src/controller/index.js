@@ -18,6 +18,7 @@ router.get('/consumer/:id', [isAuth], consumer.GetById)
 router.get('/consumer/name/:name', [isAuth], consumer.GetByName)
 router.patch('/consumer/productLike/:id', [isAuth], consumer.LikeProduct)
 router.patch('/consumer/productDiscarded/:id', [isAuth], consumer.DiscartProduct)
+router.patch('/consumer/recordLike/:id', [isAuth], consumer.RecordLike)
 
 router.get('/consumerGroup', consumerGroup.GetAll)
 router.post('/consumerGroup', [isAuth], consumerGroup.Create)

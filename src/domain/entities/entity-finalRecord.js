@@ -8,7 +8,8 @@ const finalRecord = (db) => {
       priceKg: { type: Number, required: true, trim: true },
       priceKgSuplements: { type: Number, required: true, trim: true },
       totalEuros: { type: Number, required: true, trim: true },
-      bill: { type: db.Schema.Types.ObjectId, ref: 'Bill' }
+      bill: { type: db.Schema.Types.ObjectId, ref: 'Bill' },
+      like: { type: Boolean, default: false }
     },
     {
       timestamps: true
