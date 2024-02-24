@@ -226,3 +226,34 @@ export const ChangeStatus = async (req, res) => {
       .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
   }
 }
+
+export const CastSheetsWithActiveRecord = async (req, res) => {
+  let status = 'Success'
+  let errorcode = ''
+  let message = ''
+  let data = ''
+  let statuscode = 0
+  let response = {}
+  try {
+    const { id } = req.params
+    let respOdm = await odmCastSheets.CastSheetsWithActiveRecord(id)
+
+    if (respOdm.err) {
+      status = 'Failure'
+      errorcode = respOdm.err.code
+      message = respOdm.err.message
+      statuscode = enum_.CODE_BAD_REQUEST
+    } else {
+      message = 'Success getting the active orders by castsheet'
+      data = respOdm
+      statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    console.log('res', response)
+    return res.status(statuscode).send(response)
+  } catch (error) {
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
+  }
+}

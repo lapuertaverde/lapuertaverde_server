@@ -39,6 +39,8 @@ router.delete('/castSheets/:id', [isAuth], castSheets.Delete)
 router.patch('/castSheets/:id', [isAuth], castSheets.Update)
 router.get('/castSheets/:id', [isAuth], castSheets.GetById)
 router.patch('/castSheets/changeStatus/:id', [isAdminAuth], castSheets.ChangeStatus)
+// Devuelve pedidos activos de la hoja de ruta
+router.get('/castSheets/getRecordActive/:id', [isAdminAuth], castSheets.CastSheetsWithActiveRecord)
 
 router.get('/bill', [isAuth], bill.GetAll)
 router.post('/bill', [isAuth], bill.Create)
@@ -53,6 +55,7 @@ router.delete('/finalRecord/:id', [isAuth], finalRecord.Delete)
 router.patch('/finalRecord/:id', [isAuth], finalRecord.Update)
 router.get('/finalRecord/:id', [isAuth], finalRecord.GetById)
 router.get('/finalRecord/date/:date/:id', [isAuth], finalRecord.GetByIdAndDate)
+router.patch('/finalRecord/changeActive/:id', [isAdminAuth], finalRecord.ChangeActive)
 
 router.get('/product', [isAuth], product.GetAll)
 router.post('/product', [isAdminAuth], product.Create)

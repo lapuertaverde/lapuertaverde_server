@@ -181,3 +181,29 @@ export const ChangeStatus = async (id) => {
     return { err: { code: 123, message: error } }
   }
 }
+
+export const CastSheetsWithActiveRecord = async (id) => {
+  try {
+    const castSheets = await conn.connMongo.CastSheets.findById(id).populate({
+      path: 'consumers',
+      populate: { path: 'orderInProgress' }
+    })
+
+    const activeRecord = []
+    for (const consumer of castSheets.consumers) {
+      for (const record of consumer.orderInProgress) {
+        record.active && activeRecord.push(record)
+      }
+    }
+
+    if (!activeRecord.length <= 0) {
+      return await activeRecord
+    } else {
+      magic.LogDanger('Cannot found active record')
+      return { err: { code: 123, message: 'Cannot found active record' } }
+    }
+  } catch (error) {
+    magic.LogDanger('Cannot get the active record in CastSheets by its ID', error)
+    return { err: { code: 123, message: error } }
+  }
+}
