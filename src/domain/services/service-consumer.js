@@ -244,3 +244,79 @@ export const GetByName = async (req, res) => {
     return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
   }
 }
+
+export const LikeProduct = async (req, res) => {
+  let status = 'Success',
+    errorcode = '',
+    message = '',
+    data = '',
+    statuscode = 0,
+    response = {}
+  try {
+    const { id } = req.params
+    const { idProduct } = req.body
+    if (idProduct) {
+      let respOdm = await odmConsumer.LikeProduct(id, idProduct)
+      if (respOdm.err) {
+        status = 'Failure'
+        errorcode = respOdm.err.code
+        message = respOdm.err.messsage
+        statuscode = enum_.CODE_BAD_REQUEST
+      } else {
+        console.log(respOdm)
+        message = 'Like product'
+        statuscode = enum_.CODE_OK
+        data = respOdm
+      }
+    } else {
+      status = 'Failure'
+      errorcode = enum_.ERROR_REQUIRED_FIELD
+      message = 'id does not exist'
+      statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (err) {
+    return res
+      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+  }
+}
+
+export const DiscartProduct = async (req, res) => {
+  let status = 'Success',
+    errorcode = '',
+    message = '',
+    data = '',
+    statuscode = 0,
+    response = {}
+  try {
+    const { id } = req.params
+    const { idProduct } = req.body
+    if (idProduct) {
+      let respOdm = await odmConsumer.DiscartProduct(id, idProduct)
+      if (respOdm.err) {
+        status = 'Failure'
+        errorcode = respOdm.err.code
+        message = respOdm.err.messsage
+        statuscode = enum_.CODE_BAD_REQUEST
+      } else {
+        console.log(respOdm)
+        message = 'Discarded product'
+        statuscode = enum_.CODE_OK
+        data = respOdm
+      }
+    } else {
+      status = 'Failure'
+      errorcode = enum_.ERROR_REQUIRED_FIELD
+      message = 'id does not exist'
+      statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (err) {
+    return res
+      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+  }
+}

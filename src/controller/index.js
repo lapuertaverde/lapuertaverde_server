@@ -16,6 +16,8 @@ router.delete('/consumer/:id', [isAdminAuth], consumer.Delete)
 router.patch('/consumer/:id', [isAuth], consumer.Update)
 router.get('/consumer/:id', [isAuth], consumer.GetById)
 router.get('/consumer/name/:name', [isAuth], consumer.GetByName)
+router.patch('/consumer/productLike/:id', [isAuth], consumer.LikeProduct)
+router.patch('/consumer/productDiscarded/:id', [isAuth], consumer.DiscartProduct)
 
 router.get('/consumerGroup', consumerGroup.GetAll)
 router.post('/consumerGroup', [isAuth], consumerGroup.Create)
