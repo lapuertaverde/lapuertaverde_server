@@ -1,6 +1,6 @@
-import { LogDanger, ResponseService } from '../../utils/magic.js'
 import enum_ from '../../utils/enum.js'
-import * as odmConsumer from '../odm/odm-consumer.js'
+import { ResponseService, LogDanger } from '../../utils/magic.js'
+import * as odmProduct from '../odm/odm-product.js'
 
 export const GetAll = async (req, res) => {
   let status = 'Success'
@@ -9,16 +9,15 @@ export const GetAll = async (req, res) => {
   let data = ''
   let statuscode = 0
   let response = {}
-
   try {
-    let respOdm = await odmConsumer.GetAll()
+    let respOdm = await odmProduct.GetAll()
     if (respOdm.err) {
       status = 'Failure'
       errorcode = respOdm.err.code
       message = respOdm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success GetAll Users'
+      message = 'Success GetAll Products'
       data = respOdm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
@@ -39,52 +38,24 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const {
-      name,
-      email,
-      dni,
-      CP,
-      phone,
-      consumerGroup,
-      address,
-      KgByDefault,
-      weeklyLog,
-      monthlyBills,
-      favorites,
-      discarded,
-      active
-    } = req.body
-
-    if (name && email && CP && phone && consumerGroup && address && KgByDefault) {
-      let respOdm = await odmConsumer.Create({
-        name,
-        email,
-        dni,
-        CP,
-        phone,
-        consumerGroup,
-        address,
-        KgByDefault,
-        weeklyLog,
-        monthlyBills,
-        favorites,
-        discarded,
-        active
-      })
+    const { name, image, priceKg, priceKgSuplements, description } = req.body
+    if ((name && image && priceKg && priceKgSuplements, description)) {
+      let respOdm = await odmProduct.Create(name, image, priceKg, priceKgSuplements, description)
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
-        message = respOdm.err.messsage
+        message = respOdm.err.message
+        data = { name, image, priceKg, priceKgSuplements, description }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        message = 'Consumer created'
+        message = 'Product created'
         data = respOdm
         statuscode = enum_.CODE_CREATED
       }
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'Maybe you forgot a mandatory field'
+      message = `Date, consumerName and total are required: name=${name}, image=${image}, priceKg: ${priceKg}, priceKgSuplements: ${priceKgSuplements},  description: ${description}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await ResponseService(status, errorcode, message, data)
@@ -106,15 +77,14 @@ export const Delete = async (req, res) => {
   try {
     const { id } = req.params
     if (id) {
-      let respOdm = await odmConsumer.Delete(id)
+      let respOdm = await odmProduct.Delete(id)
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
-        message = respOdm.err.messsage
+        message = respOdm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        console.log(respOdm)
-        message = 'User deleted'
+        message = 'Product deleted'
         statuscode = enum_.CODE_OK
         data = respOdm
       }
@@ -133,6 +103,7 @@ export const Delete = async (req, res) => {
       .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
   }
 }
+
 export const Update = async (req, res) => {
   let status = 'Success',
     errorcode = '',
@@ -142,57 +113,19 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const {
-      name,
-      address,
-      email,
-      phone,
-      consumerGroup,
-      CP,
-      KgByDefault,
-      bills,
-      weeklyLog,
-      active,
-      dni,
-      favorites,
-      discarded
-    } = req.body
 
-    const updatedConsumer = {
-      name,
-      address,
-      email,
-      phone,
-      consumerGroup,
-      CP,
-      KgByDefault,
-      bills,
-      weeklyLog,
-      active,
-      dni,
-      favorites,
-      discarded,
-      _id: id
-    }
+    if (id && req.body) {
+      let respOdm = await odmProduct.Update(id, req.body)
 
-    if (id && updatedConsumer) {
-      let respOdm = await odmConsumer.Update(id, updatedConsumer)
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
-        message = respOdm.err.messsage
+        message = respOdm.err.message
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
-        // console.log('resporm: ' + respOdm);
-
-        if (Object.keys(respOdm).length) {
-          message = 'Consumer updated'
-          statuscode = enum_.CODE_OK
-          data = updatedConsumer
-        } else {
-          message = 'You are not authorized to update this user'
-          statuscode = enum_.CODE_UNAUTHORIZED
-        }
+        message = 'Product updated'
+        statuscode = enum_.CODE_OK
+        data = respOdm
       }
     } else {
       status = 'Failure'
@@ -219,14 +152,14 @@ export const GetById = async (req, res) => {
   let response = {}
   try {
     const { id } = req.params
-    let respOdm = await odmConsumer.GetById(id)
+    let respOdm = await odmProduct.GetById(id)
     if (respOdm.err) {
       status = 'Failure'
       errorcode = respOdm.err.code
       message = respOdm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success getting the consumer'
+      message = 'Success getting product'
       data = respOdm
       statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
@@ -248,14 +181,15 @@ export const GetByName = async (req, res) => {
   let response = {}
   try {
     const { name } = req.params
-    let respOdm = await odmConsumer.GetByName(name)
+    console.log('name', name)
+    let respOdm = await odmProduct.GetByName(name)
     if (respOdm.err) {
       status = 'Failure'
       errorcode = respOdm.err.code
       message = respOdm.err.message
       statuscode = enum_.CODE_BAD_REQUEST
     } else {
-      message = 'Success getting the consumer'
+      message = 'Success getting the product'
       data = respOdm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
@@ -268,113 +202,31 @@ export const GetByName = async (req, res) => {
   }
 }
 
-export const LikeProduct = async (req, res) => {
-  let status = 'Success',
-    errorcode = '',
-    message = '',
-    data = '',
-    statuscode = 0,
-    response = {}
+export const ChangeAvailability = async (req, res) => {
+  let status = 'Success'
+  let errorcode = ''
+  let message = ''
+  let data = ''
+  let statuscode = 0
+  let response = {}
   try {
     const { id } = req.params
-    const { idProduct } = req.body
-    if (idProduct) {
-      let respOdm = await odmConsumer.LikeProduct(id, idProduct)
-      if (respOdm.err) {
-        status = 'Failure'
-        errorcode = respOdm.err.code
-        message = respOdm.err.messsage
-        statuscode = enum_.CODE_BAD_REQUEST
-      } else {
-        message = 'Like product'
-        statuscode = enum_.CODE_OK
-        data = respOdm
-      }
-    } else {
+    let respOdm = await odmProduct.ChangeAvailability(id)
+    if (respOdm.err) {
       status = 'Failure'
-      errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'id does not exist'
-      statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
+      errorcode = respOdm.err.code
+      message = respOdm.err.message
+      statuscode = enum_.CODE_BAD_REQUEST
+    } else {
+      message = 'Availability updated'
+      statuscode = enum_.CODE_OK
+      data = respOdm
     }
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
-  } catch (err) {
-    return res
-      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
-  }
-}
-
-export const DiscartProduct = async (req, res) => {
-  let status = 'Success',
-    errorcode = '',
-    message = '',
-    data = '',
-    statuscode = 0,
-    response = {}
-  try {
-    const { id } = req.params
-    const { idProduct } = req.body
-    if (idProduct) {
-      let respOdm = await odmConsumer.DiscartProduct(id, idProduct)
-      if (respOdm.err) {
-        status = 'Failure'
-        errorcode = respOdm.err.code
-        message = respOdm.err.messsage
-        statuscode = enum_.CODE_BAD_REQUEST
-      } else {
-        message = 'Discarded product'
-        statuscode = enum_.CODE_OK
-        data = respOdm
-      }
-    } else {
-      status = 'Failure'
-      errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'id does not exist'
-      statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
-    }
-    response = await ResponseService(status, errorcode, message, data)
-    return res.status(statuscode).send(response)
-  } catch (err) {
-    return res
-      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
-  }
-}
-
-export const RecordLike = async (req, res) => {
-  let status = 'Success',
-    errorcode = '',
-    message = '',
-    data = '',
-    statuscode = 0,
-    response = {}
-  try {
-    const { id } = req.params
-    const { idRecord } = req.body
-    if (idRecord) {
-      let respOdm = await odmConsumer.RecordLike(id, idRecord)
-      if (respOdm.err) {
-        status = 'Failure'
-        errorcode = respOdm.err.code
-        message = respOdm.err.messsage
-        statuscode = enum_.CODE_BAD_REQUEST
-      } else {
-        message = 'Like record'
-        statuscode = enum_.CODE_OK
-        data = respOdm
-      }
-    } else {
-      status = 'Failure'
-      errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = 'id does not exist'
-      statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
-    }
-    response = await ResponseService(status, errorcode, message, data)
-    return res.status(statuscode).send(response)
-  } catch (err) {
-    return res
-      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
-      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+  } catch (error) {
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
   }
 }

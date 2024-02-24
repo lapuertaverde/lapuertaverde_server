@@ -106,3 +106,68 @@ export const GetByName = async (name) => {
     return { err: { code: 123, message: error } }
   }
 }
+
+export const LikeProduct = async (id, idProduct) => {
+  try {
+    const consumer = await conn.connMongo.Consumer.findById(id)
+
+    if (consumer.favorites.includes(idProduct)) {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { favorites: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { likes: id } })
+    } else {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $push: { favorites: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $push: { likes: id } })
+    }
+
+    if (consumer.discarded?.includes(idProduct)) {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { discarded: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { discarded: id } })
+    }
+    return await conn.connMongo.Consumer.findById(id).populate('favorites')
+  } catch (error) {
+    LogDanger('Cannot get the consumer by its id', error)
+    return { err: { code: 123, message: error } }
+  }
+}
+
+export const DiscartProduct = async (id, idProduct) => {
+  try {
+    const consumer = await conn.connMongo.Consumer.findById(id)
+
+    if (consumer.discarded.includes(idProduct)) {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { discarded: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { discarded: id } })
+    } else {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $push: { discarded: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $push: { discarded: id } })
+    }
+
+    if (consumer.favorites?.includes(idProduct)) {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { favorites: idProduct } })
+      await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { likes: id } })
+    }
+    return await conn.connMongo.Consumer.findById(id).populate('discarded')
+  } catch (error) {
+    LogDanger('Cannot get the consumer by its id', error)
+    return { err: { code: 123, message: error } }
+  }
+}
+
+export const RecordLike = async (id, idRecord) => {
+  try {
+    const consumer = await conn.connMongo.Consumer.findById(id)
+
+    if (consumer.orderFavs.includes(idRecord)) {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { orderFavs: idRecord } })
+      await conn.connMongo.FinalRecord.findByIdAndUpdate(idRecord, { like: false })
+    } else {
+      await conn.connMongo.Consumer.findByIdAndUpdate(id, { $push: { orderFavs: idRecord } })
+      await conn.connMongo.FinalRecord.findByIdAndUpdate(idRecord, { like: true })
+    }
+
+    return await conn.connMongo.Consumer.findById(id).populate('orderFavs')
+  } catch (error) {
+    LogDanger('Cannot get the consumer by its id', error)
+    return { err: { code: 123, message: error } }
+  }
+}

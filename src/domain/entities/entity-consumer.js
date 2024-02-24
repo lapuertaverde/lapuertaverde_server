@@ -12,10 +12,11 @@ const consumerSchema = (db) => {
       KgByDefault: { type: Number, required: true, trim: true },
       weeklyLog: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }],
       bills: [{ type: db.Schema.Types.ObjectId, ref: 'Bill' }],
-      favorites: { type: String, trim: true },
-      discarded: { type: String, trim: true },
-      active: { type: Boolean, required: true, trim: true },
-      orderInProgress: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
+      favorites: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
+      discarded: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
+      active: { type: Boolean, default: true, required: true, trim: true },
+      orderInProgress: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }],
+      orderFavs: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
     },
     {
       timestamps: true

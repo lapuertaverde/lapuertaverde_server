@@ -18,7 +18,8 @@ export const Create = async ({
   supplementsKgs,
   priceKg,
   priceKgSuplements,
-  totalEuros
+  totalEuros,
+  products
 }) => {
   try {
     const duplicatedFinalRecord = await conn.connMongo.FinalRecord.find({ date, consumer })
@@ -36,7 +37,8 @@ export const Create = async ({
         supplementsKgs,
         priceKg,
         priceKgSuplements,
-        totalEuros
+        totalEuros,
+        products
       })
       data.save()
 
@@ -47,8 +49,8 @@ export const Create = async ({
 
       // Buscamos si hay una hoja de reparto para el grupo
       const castSheet = await conn.connMongo.CastSheets.findOne({
-        status: 'Previo',
-        consumerGroup: consumerUpdate.consumerGroup
+        castStatus: 'Previo',
+        consumerGroup: consumerUpdate.consumerGroup._id
       })
 
       if (!castSheet) {
@@ -111,9 +113,16 @@ export const Update = async ({
   supplementsKgs,
   priceKg,
   priceKgSuplements,
-  totalEuros
+  totalEuros,
+  products
 }) => {
   try {
+    const record = await conn.connMongo.FinalRecord.findById(id)
+
+    if (!record.active) {
+      LogDanger('Cannot Update finalRecord')
+      return { err: { code: 123, message: 'Cannot Update finalRecord' } }
+    }
     return await conn.connMongo.FinalRecord.findByIdAndUpdate(id, {
       date,
       consumer,
@@ -121,7 +130,8 @@ export const Update = async ({
       supplementsKgs,
       priceKg,
       priceKgSuplements,
-      totalEuros
+      totalEuros,
+      products
     })
   } catch (error) {
     LogDanger('Cannot Update finalRecord', error)
@@ -141,6 +151,22 @@ export const GetById = async (id) => {
 export const GetByIdAndDate = async (id, date) => {
   try {
     return await conn.connMongo.FinalRecord.find({ id, date }) //.populate('registers')
+  } catch (error) {
+    LogDanger('Cannot get the final record by its date', error)
+    return { err: { code: 123, message: error } }
+  }
+}
+
+export const ChangeActive = async (id) => {
+  try {
+    const record = await conn.connMongo.FinalRecord.findById(id)
+
+    if (record.active) {
+      await conn.connMongo.FinalRecord.findByIdAndUpdate(id, { active: false })
+    } else {
+      await conn.connMongo.FinalRecord.findByIdAndUpdate(id, { active: true })
+    }
+    return await conn.connMongo.FinalRecord.findById(id)
   } catch (error) {
     LogDanger('Cannot get the final record by its date', error)
     return { err: { code: 123, message: error } }

@@ -38,8 +38,16 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { date, consumer, deliveredKgs, supplementsKgs, priceKg, priceKgSuplements, totalEuros } =
-      req.body
+    const {
+      date,
+      consumer,
+      deliveredKgs,
+      supplementsKgs,
+      priceKg,
+      priceKgSuplements,
+      totalEuros,
+      products
+    } = req.body
 
     if (
       date &&
@@ -48,7 +56,8 @@ export const Create = async (req, res) => {
       supplementsKgs &&
       priceKg &&
       priceKgSuplements &&
-      totalEuros
+      totalEuros &&
+      products
     ) {
       let respOdm = await odmFinalRecord.Create({
         date,
@@ -57,7 +66,8 @@ export const Create = async (req, res) => {
         supplementsKgs,
         priceKg,
         priceKgSuplements,
-        totalEuros
+        totalEuros,
+        products
       })
       if (respOdm.err) {
         status = 'Failure'
@@ -70,7 +80,8 @@ export const Create = async (req, res) => {
           supplementsKgs,
           priceKg,
           priceKgSuplements,
-          totalEuros
+          totalEuros,
+          products
         }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
@@ -81,7 +92,7 @@ export const Create = async (req, res) => {
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = `All fields are required: date=${date}, consumer=${consumer}, deliveredKgs = ${deliveredKgs}, supplementsKgs=${supplementsKgs}, priceKg=${priceKg}, priceKgSuplements=${priceKgSuplements}, totalEuros=${totalEuros}`
+      message = `All fields are required: date=${date}, consumer=${consumer}, deliveredKgs = ${deliveredKgs}, supplementsKgs=${supplementsKgs}, priceKg=${priceKg}, priceKgSuplements=${priceKgSuplements}, totalEuros=${totalEuros}, products=${products}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await ResponseService(status, errorcode, message, data)
@@ -139,8 +150,16 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { date, consumer, deliveredKgs, supplementsKgs, priceKg, priceKgSuplements, totalEuros } =
-      req.body
+    const {
+      date,
+      consumer,
+      deliveredKgs,
+      supplementsKgs,
+      priceKg,
+      priceKgSuplements,
+      totalEuros,
+      products
+    } = req.body
 
     if (id) {
       let respOdm = await odmFinalRecord.Update({
@@ -151,7 +170,8 @@ export const Update = async (req, res) => {
         supplementsKgs,
         priceKg,
         priceKgSuplements,
-        totalEuros
+        totalEuros,
+        products
       })
 
       if (respOdm.err) {
@@ -169,7 +189,8 @@ export const Update = async (req, res) => {
           supplementsKgs,
           priceKg,
           priceKgSuplements,
-          totalEuros
+          totalEuros,
+          products
         }
       }
     } else {
@@ -236,6 +257,35 @@ export const GetByIdAndDate = async (req, res) => {
       message = 'Success getting final record'
       data = respOdm
       statuscode = data.length > 0 ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
+    }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (error) {
+    LogDanger('error: ', error)
+    response = await ResponseService('Failure', enum_.CODE_BAD_REQUEST, error, '')
+    return res.status(enum_.CODE_INTERNAL_SERVER_ERROR).send(response)
+  }
+}
+
+export const ChangeActive = async (req, res) => {
+  let status = 'Success'
+  let errorcode = ''
+  let message = ''
+  let data = ''
+  let statuscode = 0
+  let response = {}
+  try {
+    const { id } = req.params
+    let respOdm = await odmFinalRecord.ChangeActive(id)
+    if (respOdm.err) {
+      status = 'Failure'
+      errorcode = respOdm.err.code
+      message = respOdm.err.message
+      statuscode = enum_.CODE_BAD_REQUEST
+    } else {
+      message = 'Success change record status '
+      data = respOdm
+      statuscode = data ? enum_.CODE_OK : enum_.CODE_NO_CONTENT
     }
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)

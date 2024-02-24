@@ -6,6 +6,7 @@ import * as castSheets from '../domain/services/service-castSheets.js'
 import * as bill from '../domain/services/service-bill.js'
 import * as finalRecord from '../domain/services/service-finalRecord.js'
 import * as user from '../domain/services/service-user.js'
+import * as product from '../domain/services/service-product.js'
 import { isAuth } from '../middlewares/auth.middleware.js'
 import isAdminAuth from '../middlewares/adminAuth.middleware.js'
 
@@ -15,6 +16,9 @@ router.delete('/consumer/:id', [isAdminAuth], consumer.Delete)
 router.patch('/consumer/:id', [isAuth], consumer.Update)
 router.get('/consumer/:id', [isAuth], consumer.GetById)
 router.get('/consumer/name/:name', [isAuth], consumer.GetByName)
+router.patch('/consumer/productLike/:id', [isAuth], consumer.LikeProduct)
+router.patch('/consumer/productDiscarded/:id', [isAuth], consumer.DiscartProduct)
+router.patch('/consumer/recordLike/:id', [isAuth], consumer.RecordLike)
 
 router.get('/consumerGroup', consumerGroup.GetAll)
 router.post('/consumerGroup', [isAuth], consumerGroup.Create)
@@ -35,6 +39,8 @@ router.delete('/castSheets/:id', [isAuth], castSheets.Delete)
 router.patch('/castSheets/:id', [isAuth], castSheets.Update)
 router.get('/castSheets/:id', [isAuth], castSheets.GetById)
 router.patch('/castSheets/changeStatus/:id', [isAdminAuth], castSheets.ChangeStatus)
+// Devuelve pedidos activos de la hoja de ruta
+router.get('/castSheets/getRecordActive/:id', [isAdminAuth], castSheets.CastSheetsWithActiveRecord)
 
 router.get('/bill', [isAuth], bill.GetAll)
 router.post('/bill', [isAuth], bill.Create)
@@ -49,5 +55,14 @@ router.delete('/finalRecord/:id', [isAuth], finalRecord.Delete)
 router.patch('/finalRecord/:id', [isAuth], finalRecord.Update)
 router.get('/finalRecord/:id', [isAuth], finalRecord.GetById)
 router.get('/finalRecord/date/:date/:id', [isAuth], finalRecord.GetByIdAndDate)
+router.patch('/finalRecord/changeActive/:id', [isAdminAuth], finalRecord.ChangeActive)
+
+router.get('/product', [isAuth], product.GetAll)
+router.post('/product', [isAdminAuth], product.Create)
+router.delete('/product/:id', [isAdminAuth], product.Delete)
+router.patch('/product/:id', [isAdminAuth], product.Update)
+router.get('/product/:id', [isAuth], product.GetById)
+router.get('/product/name/:name', [isAuth], product.GetByName)
+router.patch('/product/changeAvailability/:id', [isAdminAuth], product.ChangeAvailability)
 
 export default router
