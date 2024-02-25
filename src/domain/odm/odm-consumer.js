@@ -56,10 +56,10 @@ export const Create = async ({
 
     const newUser = await conn.connMongo.User({
       name,
-      password: password || name,
+      password: name,
       email,
       role: 'Consumer',
-      avatar
+      avatar: avatar || name
     })
 
     newUser.save()
