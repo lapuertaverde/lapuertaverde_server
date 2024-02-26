@@ -46,7 +46,8 @@ export const Create = async (req, res) => {
       priceKg,
       priceKgSuplements,
       totalEuros,
-      products
+      products,
+      box
     } = req.body
 
     if (
@@ -57,7 +58,8 @@ export const Create = async (req, res) => {
       priceKg &&
       priceKgSuplements &&
       totalEuros &&
-      products
+      products &&
+      box
     ) {
       let respOdm = await odmFinalRecord.Create({
         date,
@@ -67,7 +69,8 @@ export const Create = async (req, res) => {
         priceKg,
         priceKgSuplements,
         totalEuros,
-        products
+        products,
+        box
       })
       if (respOdm.err) {
         status = 'Failure'
@@ -81,7 +84,8 @@ export const Create = async (req, res) => {
           priceKg,
           priceKgSuplements,
           totalEuros,
-          products
+          products,
+          box
         }
         statuscode = enum_.CODE_BAD_REQUEST
       } else {
@@ -92,7 +96,7 @@ export const Create = async (req, res) => {
     } else {
       status = 'Failure'
       errorcode = enum_.ERROR_REQUIRED_FIELD
-      message = `All fields are required: date=${date}, consumer=${consumer}, deliveredKgs = ${deliveredKgs}, supplementsKgs=${supplementsKgs}, priceKg=${priceKg}, priceKgSuplements=${priceKgSuplements}, totalEuros=${totalEuros}, products=${products}`
+      message = `All fields are required: date=${date}, consumer=${consumer}, deliveredKgs = ${deliveredKgs}, supplementsKgs=${supplementsKgs}, priceKg=${priceKg}, priceKgSuplements=${priceKgSuplements}, totalEuros=${totalEuros}, products=${products}, box=${box}`
       statuscode = enum_.CODE_BAD_REQUEST
     }
     response = await ResponseService(status, errorcode, message, data)
