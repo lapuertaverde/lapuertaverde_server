@@ -162,7 +162,8 @@ export const Update = async (req, res) => {
       priceKg,
       priceKgSuplements,
       totalEuros,
-      products
+      products,
+      box
     } = req.body
 
     if (id) {
@@ -175,7 +176,8 @@ export const Update = async (req, res) => {
         priceKg,
         priceKgSuplements,
         totalEuros,
-        products
+        products,
+        box
       })
 
       if (respOdm.err) {
@@ -194,7 +196,8 @@ export const Update = async (req, res) => {
           priceKg,
           priceKgSuplements,
           totalEuros,
-          products
+          products,
+          box
         }
       }
     } else {

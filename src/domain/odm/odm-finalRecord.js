@@ -118,7 +118,8 @@ export const Update = async ({
   priceKg,
   priceKgSuplements,
   totalEuros,
-  products
+  products,
+  box
 }) => {
   try {
     const record = await conn.connMongo.FinalRecord.findById(id)
@@ -135,7 +136,8 @@ export const Update = async ({
       priceKg,
       priceKgSuplements,
       totalEuros,
-      products
+      products,
+      box
     })
   } catch (error) {
     LogDanger('Cannot Update finalRecord', error)
