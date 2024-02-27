@@ -18,7 +18,7 @@ export const Create = async ({
   consumerGroup,
   address,
   KgByDefault,
-  weeklyLog,
+  records,
   monthlyBills,
   favorites,
   discarded,
@@ -35,7 +35,7 @@ export const Create = async ({
       consumerGroup,
       address,
       KgByDefault,
-      weeklyLog,
+      records,
       monthlyBills,
       favorites,
       discarded,
@@ -102,7 +102,7 @@ export const GetById = async (id) => {
     return await conn.connMongo.Consumer.findById(id)
       .populate('bills')
       .populate({
-        path: 'weeklyLog',
+        path: 'records',
         populate: { path: 'products' }
       })
       .populate({

@@ -96,7 +96,7 @@ export const Delete = async (id) => {
   try {
     const finalRecordDeleted = await conn.connMongo.FinalRecord.findByIdAndDelete(id)
 
-    await conn.connMongo.Consumer.updateOne({ weeklyLog: id }, { $pull: { weeklyLog: id } })
+    await conn.connMongo.Consumer.updateOne({ records: id }, { $pull: { records: id } })
     await conn.connMongo.Consumer.updateOne(
       { orderInProgress: id },
       { $pull: { orderInProgress: id } }
