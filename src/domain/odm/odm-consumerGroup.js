@@ -6,6 +6,26 @@ export const GetAll = async () => {
     const result = await conn.connMongo.ConsumerGroup.find()
       .populate('castSheets')
       .populate('consumers')
+      .populate({
+        path: 'consumers',
+        populate: { path: 'favorites' }
+      })
+      .populate({
+        path: 'consumers',
+        populate: { path: 'bills' }
+      })
+      .populate({
+        path: 'consumers',
+        populate: { path: 'discarded' }
+      })
+      .populate({
+        path: 'consumers',
+        populate: { path: 'records' }
+      })
+    // .populate({
+    //   path: 'consumers',
+    //   populate: { path: 'weeklyLog' }
+    // })
 
     return result
   } catch (error) {
