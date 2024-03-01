@@ -79,7 +79,7 @@ export const ChangeStatus = async (id) => {
       })
       .populate({
         path: 'consumers',
-        populate: { path: 'weeklyLog' }
+        populate: { path: 'records' }
       })
 
     // Depende del status hará una cosa u otra
@@ -115,7 +115,7 @@ export const ChangeStatus = async (id) => {
 
           //  Cambiamos los pedidos en curso a pedidos en el consumer
           await conn.connMongo.Consumer.findByIdAndUpdate(consumer._id, {
-            $push: { weeklyLog: order._id },
+            $push: { records: order._id },
             $pull: { orderInProgress: order._id }
           })
 
@@ -163,9 +163,9 @@ export const ChangeStatus = async (id) => {
 
         for (const register of bill.registers) {
           await conn.connMongo.Consumer.updateOne(
-            { weeklyLog: register },
+            { records: register },
             {
-              $pull: { weeklyLog: register },
+              $pull: { records: register },
               $push: { orderInProgress: register }
             }
           )

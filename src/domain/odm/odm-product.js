@@ -75,7 +75,8 @@ export const Update = async (id, body) => {
       priceKgSuplements: body.priceKgSuplements
         ? body.priceKgSuplements
         : productDB.priceKgSuplements,
-      description: body.description ? body.description : productDB.description
+      description: body.description ? body.description : productDB.description,
+      availability: body.availability
     }
     await conn.connMongo.Product.findByIdAndUpdate(id, updatedProduct)
     return await conn.connMongo.Product.findById(id)

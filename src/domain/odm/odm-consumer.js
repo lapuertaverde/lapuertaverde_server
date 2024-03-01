@@ -18,7 +18,7 @@ export const Create = async ({
   consumerGroup,
   address,
   KgByDefault,
-  weeklyLog,
+  records,
   monthlyBills,
   favorites,
   discarded,
@@ -35,7 +35,7 @@ export const Create = async ({
       consumerGroup,
       address,
       KgByDefault,
-      weeklyLog,
+      records,
       monthlyBills,
       favorites,
       discarded,
@@ -56,10 +56,10 @@ export const Create = async ({
 
     const newUser = await conn.connMongo.User({
       name,
-      password: password || name,
+      password: name,
       email,
       role: 'Consumer',
-      avatar
+      avatar: avatar || name
     })
 
     newUser.save()
@@ -73,6 +73,14 @@ export const Create = async ({
 
 export const Delete = async (id) => {
   try {
+    const consumer = await conn.connMongo.Consumer.findById(id)
+    if (!consumer) {
+      throw new Error('Consumer not found')
+    }
+    await conn.connMongo.User.deleteOne({ email: consumer.email })
+    await conn.connMongo.ConsumerGroup.findByIdAndUpdate(consumer.consumerGroup, {
+      $pull: { consumers: consumer._id }
+    })
     return await conn.connMongo.Consumer.deleteOne({ _id: id })
   } catch (error) {
     LogDanger('Cannot Delete consumer', error)
@@ -91,7 +99,16 @@ export const Update = async (id, updatedUser) => {
 
 export const GetById = async (id) => {
   try {
-    return await conn.connMongo.Consumer.findById(id).populate('bills weeklyLog orderInProgress')
+    return await conn.connMongo.Consumer.findById(id)
+      .populate('bills')
+      .populate({
+        path: 'records',
+        populate: { path: 'products' }
+      })
+      .populate({
+        path: 'orderInProgress',
+        populate: { path: 'products' }
+      })
   } catch (error) {
     LogDanger('Cannot get the consumer by its ID', error)
     return { err: { code: 123, message: error } }

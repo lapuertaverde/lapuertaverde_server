@@ -19,9 +19,11 @@ export const Create = async ({
   priceKg,
   priceKgSuplements,
   totalEuros,
-  products
+  products,
+  box
 }) => {
   try {
+    console.log('box', box)
     const duplicatedFinalRecord = await conn.connMongo.FinalRecord.find({ date, consumer })
     if (duplicatedFinalRecord.length > 0) {
       throw {
@@ -38,7 +40,8 @@ export const Create = async ({
         priceKg,
         priceKgSuplements,
         totalEuros,
-        products
+        products,
+        box
       })
       data.save()
 
@@ -59,7 +62,8 @@ export const Create = async ({
           date,
           consumerGroup: consumerUpdate.consumerGroup._id,
           consumers: [consumer],
-          deliveryAddress: consumerUpdate.consumerGroup.deliveryAddress
+          deliveryAddress:
+            consumerUpdate.consumerGroup.deliveryAddress || 'calle de los desamparados'
         })
 
         newCastSheet.save()
@@ -92,7 +96,7 @@ export const Delete = async (id) => {
   try {
     const finalRecordDeleted = await conn.connMongo.FinalRecord.findByIdAndDelete(id)
 
-    await conn.connMongo.Consumer.updateOne({ weeklyLog: id }, { $pull: { weeklyLog: id } })
+    await conn.connMongo.Consumer.updateOne({ records: id }, { $pull: { records: id } })
     await conn.connMongo.Consumer.updateOne(
       { orderInProgress: id },
       { $pull: { orderInProgress: id } }
@@ -114,7 +118,8 @@ export const Update = async ({
   priceKg,
   priceKgSuplements,
   totalEuros,
-  products
+  products,
+  box
 }) => {
   try {
     const record = await conn.connMongo.FinalRecord.findById(id)
@@ -131,7 +136,8 @@ export const Update = async ({
       priceKg,
       priceKgSuplements,
       totalEuros,
-      products
+      products,
+      box
     })
   } catch (error) {
     LogDanger('Cannot Update finalRecord', error)

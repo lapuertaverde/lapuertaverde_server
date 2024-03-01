@@ -10,7 +10,7 @@ const consumerSchema = (db) => {
       address: { type: String, required: true, trim: true },
       avatar: { type: String, trim: true },
       KgByDefault: { type: Number, required: true, trim: true },
-      weeklyLog: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }],
+      records: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }],
       bills: [{ type: db.Schema.Types.ObjectId, ref: 'Bill' }],
       favorites: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
       discarded: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
