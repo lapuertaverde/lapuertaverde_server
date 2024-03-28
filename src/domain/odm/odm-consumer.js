@@ -140,7 +140,16 @@ export const LikeProduct = async (id, idProduct) => {
       await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { discarded: idProduct } })
       await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { discarded: id } })
     }
-    return await conn.connMongo.Consumer.findById(id).populate('favorites')
+    return await conn.connMongo.Consumer.findById(id)
+      .populate('bills')
+      .populate({
+        path: 'records',
+        populate: { path: 'products' }
+      })
+      .populate({
+        path: 'orderInProgress',
+        populate: { path: 'products' }
+      })
   } catch (error) {
     LogDanger('Cannot get the consumer by its id', error)
     return { err: { code: 123, message: error } }
@@ -163,7 +172,16 @@ export const DiscartProduct = async (id, idProduct) => {
       await conn.connMongo.Consumer.findByIdAndUpdate(id, { $pull: { favorites: idProduct } })
       await conn.connMongo.Product.findByIdAndUpdate(idProduct, { $pull: { likes: id } })
     }
-    return await conn.connMongo.Consumer.findById(id).populate('discarded')
+    return await conn.connMongo.Consumer.findById(id)
+      .populate('bills')
+      .populate({
+        path: 'records',
+        populate: { path: 'products' }
+      })
+      .populate({
+        path: 'orderInProgress',
+        populate: { path: 'products' }
+      })
   } catch (error) {
     LogDanger('Cannot get the consumer by its id', error)
     return { err: { code: 123, message: error } }
@@ -182,7 +200,19 @@ export const RecordLike = async (id, idRecord) => {
       await conn.connMongo.FinalRecord.findByIdAndUpdate(idRecord, { like: true })
     }
 
-    return await conn.connMongo.Consumer.findById(id).populate('orderFavs')
+    return {
+      finalRecord: await conn.connMongo.FinalRecord.findById(idRecord).populate('products'),
+      consumer: await conn.connMongo.Consumer.findById(id)
+        .populate('bills')
+        .populate({
+          path: 'records',
+          populate: { path: 'products' }
+        })
+        .populate({
+          path: 'orderInProgress',
+          populate: { path: 'products' }
+        })
+    }
   } catch (error) {
     LogDanger('Cannot get the consumer by its id', error)
     return { err: { code: 123, message: error } }

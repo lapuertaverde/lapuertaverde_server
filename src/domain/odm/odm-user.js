@@ -68,9 +68,24 @@ export const Delete = async (id) => {
   }
 }
 
-export const Update = async (id, { name, password, avatar, role }) => {
+export const Update = async (id, { name, password, avatar, role, priceKg }) => {
   try {
-    return await conn.connMongo.User.findByIdAndUpdate(id, { name, password, avatar, role })
+    return await conn.connMongo.User.findByIdAndUpdate(id, {
+      name,
+      password,
+      avatar,
+      role,
+      priceKg
+    })
+  } catch (error) {
+    LogDanger('Cannot Update consumer', error)
+    return { err: { code: 123, message: error } }
+  }
+}
+
+export const UpdatePrice = async (priceKg, priceFuel) => {
+  try {
+    return conn.connMongo.User.updateMany({ priceKg, priceFuel })
   } catch (error) {
     LogDanger('Cannot Update consumer', error)
     return { err: { code: 123, message: error } }

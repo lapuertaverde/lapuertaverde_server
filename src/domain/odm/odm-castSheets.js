@@ -10,7 +10,14 @@ export const GetAll = async () => {
   }
 }
 
-export const Create = async (date, consumerGroup, consumers, deliveryAddress, castStatus) => {
+export const Create = async (
+  date,
+  consumerGroup,
+  consumers,
+  deliveryAddress,
+  castStatus,
+  records
+) => {
   try {
     const duplicatedCastSheets = await conn.connMongo.CastSheets.find({ date, consumerGroup })
     if (duplicatedCastSheets.length > 0) {
@@ -25,7 +32,8 @@ export const Create = async (date, consumerGroup, consumers, deliveryAddress, ca
         consumerGroup,
         consumers,
         deliveryAddress,
-        castStatus
+        castStatus,
+        records
       })
       data.save()
       return data

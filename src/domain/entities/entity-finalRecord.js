@@ -4,15 +4,16 @@ const finalRecord = (db) => {
       date: { type: String, required: true, trim: true },
       consumer: { type: db.Schema.Types.ObjectId, ref: 'Consumer' },
       deliveredKgs: { type: Number, required: true, trim: true },
-      // supplementsKgs: { type: Number, required: true, trim: true },
-      // priceKg: { type: Number, required: true, trim: true },
-      // priceKgSuplements: { type: Number, required: true, trim: true },
+      priceKg: { type: Number, required: true, trim: true },
       totalEuros: { type: Number, required: true, trim: true },
       bill: { type: db.Schema.Types.ObjectId, ref: 'Bill' },
       like: { type: Boolean, default: false },
-      active: { type: Boolean, default: true },
+      delivered: { type: Boolean, default: true },
       products: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
-      box: { type: Array }
+      with: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
+      without: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
+      others: [{ type: db.Schema.Types.ObjectId, ref: 'Product' }],
+      paid: { type: Boolean, default: false }
     },
     {
       timestamps: true

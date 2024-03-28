@@ -5,7 +5,9 @@ const userSchema = (db) => {
       email: { type: String, required: true, trim: true, unique: true },
       password: { type: String, required: true, trim: true },
       avatar: { type: String, trim: true },
-      role: { type: String, enum: ['Admin', 'Consumer'], trim: true, default: 'Consumer' }
+      role: { type: String, enum: ['Admin', 'Consumer'], trim: true, default: 'Consumer' },
+      priceKg: { type: Number, default: 3 },
+      priceFuel: { type: Number, default: 2 }
     },
     {
       timestamps: true

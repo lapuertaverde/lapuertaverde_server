@@ -150,10 +150,10 @@ export const Update = async (req, res) => {
     response = {}
   try {
     const { id } = req.params
-    const { name, password, avatar, role } = req.body
+    const { name, password, avatar, role, priceKg } = req.body
 
     if (id) {
-      let respOdm = await odmUser.Update(id, { name, password, avatar, role })
+      let respOdm = await odmUser.Update(id, { name, password, avatar, role, priceKg })
       if (respOdm.err) {
         status = 'Failure'
         errorcode = respOdm.err.code
@@ -177,6 +177,45 @@ export const Update = async (req, res) => {
       message = 'id does not exist'
       statuscode = enum_.CODE_UNPROCESSABLE_ENTITY
     }
+    response = await ResponseService(status, errorcode, message, data)
+    return res.status(statuscode).send(response)
+  } catch (err) {
+    console.log('err = ', err)
+    return res
+      .status(enum_.CODE_INTERNAL_SERVER_ERROR)
+      .send(await ResponseService('Failure', enum_.CRASH_LOGIC, 'err', ''))
+  }
+}
+
+export const UpdatePrice = async (req, res) => {
+  let status = 'Success',
+    errorcode = '',
+    message = '',
+    data = '',
+    statuscode = 0,
+    response = {}
+  try {
+    const { priceKg, priceFuel } = req.body
+
+    let respOdm = await odmUser.UpdatePrice(priceKg, priceFuel)
+    if (respOdm.err) {
+      status = 'Failure'
+      errorcode = respOdm.err.code
+      message = respOdm.err.messsage
+      statuscode = enum_.CODE_BAD_REQUEST
+    } else {
+      // console.log('resporm: ' + respOdm);
+
+      if (Object.keys(respOdm).length) {
+        message = 'User updated'
+        statuscode = enum_.CODE_OK
+        data = { priceKg, priceFuel }
+      } else {
+        message = 'You are not authorized to update this user'
+        statuscode = enum_.CODE_UNAUTHORIZED
+      }
+    }
+
     response = await ResponseService(status, errorcode, message, data)
     return res.status(statuscode).send(response)
   } catch (err) {

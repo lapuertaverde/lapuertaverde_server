@@ -12,7 +12,8 @@ const castSheets = (db) => {
         default: 'Previo',
         required: true,
         trim: true
-      }
+      },
+      records: [{ type: db.Schema.Types.ObjectId, ref: 'FinalRecord' }]
     },
     {
       timestamps: true

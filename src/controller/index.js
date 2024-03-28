@@ -32,6 +32,7 @@ router.post('/user', user.Create)
 router.delete('/user/:id', [isAuth], user.Delete)
 router.patch('/user/:id', user.Update)
 router.get('/user/:id', [isAuth], user.GetById)
+router.patch('/user', [isAdminAuth], user.UpdatePrice)
 
 router.get('/castSheets', [isAuth], castSheets.GetAll)
 router.post('/castSheets', [isAuth], castSheets.Create)

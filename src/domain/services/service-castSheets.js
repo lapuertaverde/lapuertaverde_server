@@ -38,14 +38,15 @@ export const Create = async (req, res) => {
     statuscode = 0,
     response = {}
   try {
-    const { date, consumerGroup, consumers, deliveryAddress, castStatus } = req.body
+    const { date, consumerGroup, consumers, deliveryAddress, castStatus, records } = req.body
     if (date && consumerGroup) {
       let respOdm = await odmCastSheets.Create(
         date,
         consumerGroup,
         consumers,
         deliveryAddress,
-        castStatus
+        castStatus,
+        records
       )
       if (respOdm.err) {
         status = 'Failure'

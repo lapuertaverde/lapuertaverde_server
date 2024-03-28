@@ -11,19 +11,8 @@ export const GetAll = async () => {
   }
 }
 
-export const Create = async ({
-  date,
-  consumer,
-  deliveredKgs,
-  supplementsKgs,
-  priceKg,
-  priceKgSuplements,
-  totalEuros,
-  products,
-  box
-}) => {
+export const Create = async ({ date, consumer, deliveredKgs, products }) => {
   try {
-    console.log('box', box)
     const duplicatedFinalRecord = await conn.connMongo.FinalRecord.find({ date, consumer })
     if (duplicatedFinalRecord.length > 0) {
       throw {
@@ -32,18 +21,23 @@ export const Create = async ({
         message: "You can't create a final record with the same date and consumer"
       }
     } else {
+      const { priceKg, priceFuel } = await conn.connMongo.User.findOne({ role: 'Admin' })
+
+      const { consumerGroup } = await conn.connMongo.User.findById(consumer).populate(
+        'consumerGroup'
+      )
+
+      const fuel = consumerGroup.freeFuel ? 0 : priceFuel
+
       const data = await new conn.connMongo.FinalRecord({
         date,
         consumer,
         deliveredKgs,
-        supplementsKgs,
         priceKg,
-        priceKgSuplements,
-        totalEuros,
         products,
-        box
+        totalEuros: priceKg * deliveredKgs + fuel
       })
-      data.save()
+      await data.save()
 
       // Actualizamos el consumidor que ha realizado el pedido
       const consumerUpdate = await conn.connMongo.Consumer.findByIdAndUpdate(consumer, {
